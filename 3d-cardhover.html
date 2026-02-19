@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>3D Card Hover Effect | code_wars_official</title>
+  <!-- Script Add -->
+  <script src="./main.js"></script>
+  
+  <style>
+    :root {
+      --card-height: 300px;
+      --card-width: calc(var(--card-height) / 1.5);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      width: 100vw;
+      height: 100vh;
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: #000;
+      overflow: hidden;
+    }
+
+    /* ===== Animated background layers (behind everything) ===== */
+    .bg-canvas {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: -999; /* keep behind any negative z children of cards */
+      display: block;
+    }
+
+    .card {
+      width: var(--card-width);
+      height: var(--card-height);
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: flex-end;
+      padding: 0 36px;
+      perspective: 2500px;
+      margin: 0 50px;
+      border-radius: 5px;
+    }
+
+    .cover-image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 5px;
+    }
+
+    .wrapper {
+      transition: all 0.5s;
+      position: absolute;
+      width: 100%;
+      z-index: -1;
+      border-radius: 5px;
+    }
+
+    .card:hover .wrapper {
+      transform: perspective(900px) translateY(-5%) rotateX(25deg) translateZ(0);
+      box-shadow: 2px 35px 32px -8px rgba(0, 0, 0, 0.75);
+      border-radius: 5px;
+    }
+
+    .wrapper::before,
+    .wrapper::after {
+      content: "";
+      opacity: 0;
+      width: 100%;
+      height: 80px;
+      transition: all 0.5s;
+      position: absolute;
+      left: 0;
+      border-radius: 5px;
+    }
+
+    .wrapper::before {
+      top: 0;
+      height: 100%;
+      background-image: linear-gradient(
+        to top,
+        transparent 46%,
+        rgba(12, 13, 19, 0.5) 68%,
+        rgba(12, 13, 19) 97%
+      );
+      border-radius: 5px;
+    }
+
+    .wrapper::after {
+      bottom: 0;
+      opacity: 1;
+      background-image: linear-gradient(
+        to bottom,
+        transparent 46%,
+        rgba(12, 13, 19, 0.5) 68%,
+        rgba(12, 13, 19) 97%
+      );
+      border-radius: 5px;
+    }
+
+    /* keep original behavior */
+    .card:hover .wrapper::before,
+    .wrapper::after {
+      opacity: 1;
+    }
+
+    .card:hover .wrapper::after { height: 120px; }
+
+    .title {
+      width: 100%;
+      transition: transform 0.5s;
+    }
+
+    .card:hover .title { transform: translate3d(0%, -50px, 100px); }
+
+    .character {
+      width: 100%;
+      opacity: 0;
+      transition: all 0.5s;
+      position: absolute;
+      z-index: -1;
+    }
+
+    .card:hover .character {
+      opacity: 1;
+      transform: translate3d(0%, -30%, 100px);
+    }
+  </style>
+</head>
+<body>
+  <!-- Background animation layers -->
+  <canvas id="stars" class="bg-canvas" aria-hidden="true"></canvas>
+  <canvas id="rain" class="bg-canvas" aria-hidden="true"></canvas>
+
+  <a href="#">
+    <div class="card">
+      <div class="wrapper">
+        <img src="assets/dark_rider-cover.jpg" class="cover-image" alt="Dark Rider cover"/>
+      </div>
+      <img src="assets/dark_rider-title.png" class="title" alt="Dark Rider title"/>
+      <img src="assets/dark_rider-character.webp" class="character" alt="Dark Rider character"/>
+    </div>
+  </a>
+
+  <a href="#">
+    <div class="card">
+      <div class="wrapper">
+        <img src="assets/force_mage-cover.jpg" class="cover-image" alt="Force Mage cover"/>
+      </div>
+      <img src="assets/force_mage-title.png" class="title" alt="Force Mage title"/>
+      <img src="assets/force_mage-character.webp" class="character" alt="Force Mage character"/>
+    </div>
+  </a>
+
+  <!-- ===== Stars + Rain animation (vanilla canvas) ===== -->
+  <script>
+    (function () {
+      const prefersReduced = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      if (prefersReduced) return; // Respect user motion settings
+
+      const starCanvas = document.getElementById("stars");
+      const rainCanvas = document.getElementById("rain");
+      const sCtx = starCanvas.getContext("2d");
+      const rCtx = rainCanvas.getContext("2d");
+
+      let stars = [];
+      let drops = [];
+      let width = 0, height = 0, dpr = Math.min(window.devicePixelRatio || 1, 2);
+
+      const clamp = (n, min, max) => Math.max(min, Math.min(max, n));
+
+      function sizeCanvas(canvas, ctx) {
+        const w = window.innerWidth;
+        const h = window.innerHeight;
+        canvas.width = Math.floor(w * dpr);
+        canvas.height = Math.floor(h * dpr);
+        canvas.style.width = w + "px";
+        canvas.style.height = h + "px";
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      }
+
+      function reseedParticles() {
+        width = window.innerWidth;
+        height = window.innerHeight;
+        sizeCanvas(starCanvas, sCtx);
+        sizeCanvas(rainCanvas, rCtx);
+
+        const area = width * height;
+        const starCount = clamp(Math.floor(area / 8000), 80, 250);
+        const rainCount = clamp(Math.floor(area / 9000), 60, 220);
+
+        stars = new Array(starCount).fill(0).map(() => ({
+          x: Math.random() * width,
+          y: Math.random() * height,
+          r: Math.random() * 1.2 + 0.4,
+          baseAlpha: Math.random() * 0.6 + 0.2,
+          twinkleAmp: Math.random() * 0.5 + 0.2,
+          twinkleSpeed: Math.random() * 0.015 + 0.005,
+          phase: Math.random() * Math.PI * 2
+        }));
+
+        drops = new Array(rainCount).fill(0).map(() => ({
+          x: Math.random() * width,
+          y: Math.random() * height,
+          len: Math.random() * 20 + 10,
+          speed: Math.random() * 3 + 4,
+          wind: (Math.random() - 0.5) * 0.6,
+          opacity: Math.random() * 0.3 + 0.2
+        }));
+      }
+
+      let last = 0;
+      function animate(t) {
+        const dt = Math.min(33, t - last);
+        last = t;
+
+        // Starfield
+        sCtx.clearRect(0, 0, width, height);
+        sCtx.save();
+        for (let i = 0; i < stars.length; i++) {
+          const st = stars[i];
+          st.phase += st.twinkleSpeed * dt;
+          const tw = (Math.sin(st.phase) + 1) * 0.5; // 0..1
+          const a = clamp(st.baseAlpha + tw * st.twinkleAmp, 0, 1);
+          sCtx.globalAlpha = a;
+          sCtx.beginPath();
+          sCtx.arc(st.x, st.y, st.r, 0, Math.PI * 2);
+          sCtx.fillStyle = "#fff";
+          sCtx.fill();
+        }
+        sCtx.restore();
+
+        // Rain
+        rCtx.clearRect(0, 0, width, height);
+        rCtx.save();
+        rCtx.lineWidth = 1;
+        rCtx.strokeStyle = "rgba(255,255,255,0.5)";
+        rCtx.beginPath();
+        for (let i = 0; i < drops.length; i++) {
+          const d = drops[i];
+          rCtx.globalAlpha = d.opacity;
+          const x2 = d.x + d.wind * d.len;
+          const y2 = d.y + d.len;
+          rCtx.moveTo(d.x, d.y);
+          rCtx.lineTo(x2, y2);
+
+          d.x += d.wind;
+          d.y += d.speed;
+
+          if (d.y > height + 20 || d.x < -20 || d.x > width + 20) {
+            d.x = Math.random() * width;
+            d.y = -Math.random() * 40 - 10;
+            d.len = Math.random() * 20 + 10;
+            d.speed = Math.random() * 3 + 4;
+            d.wind = (Math.random() - 0.5) * 0.6;
+            d.opacity = Math.random() * 0.3 + 0.2;
+          }
+        }
+        rCtx.stroke();
+        rCtx.restore();
+
+        requestAnimationFrame(animate);
+      }
+
+      window.addEventListener("resize", reseedParticles, { passive: true });
+      reseedParticles();
+      requestAnimationFrame(animate);
+    })();
+  </script>
+</body>
+</html>

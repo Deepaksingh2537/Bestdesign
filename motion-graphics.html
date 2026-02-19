@@ -1,0 +1,613 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <title>Motion Graphic</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous" />
+  <link rel="stylesheet" href="style.css" />
+
+  <link rel="stylesheet" href="css/mystyle.css" />
+  <!-- .ico format -->
+  <link rel="icon" href="assets/favicon.jpg" type="image/x-icon">
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+  <style>
+    .course-card {
+      border-radius: 12px;
+      overflow: hidden;
+      transition: transform 0.3s, box-shadow 0.3s;
+      background: white;
+    }
+
+    .course-card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1) !important;
+    }
+
+    .course-card img {
+      height: 200px;
+      object-fit: cover;
+      transition: transform 0.5s;
+    }
+
+    .course-card:hover img {
+      transform: scale(1.05);
+    }
+
+    .card-title {
+      color: #2c3e50;
+      font-weight: 700;
+      margin-bottom: 15px;
+    }
+
+    .learn-more {
+      color: #ff642e;
+      font-weight: 600;
+      display: inline-block;
+      margin-top: 10px;
+      transition: color 0.3s;
+    }
+
+    .learn-more:hover {
+      color: #2980b9;
+    }
+
+    .course-card .p-3 {
+      border-top: 1px solid #f1f1f1;
+    }
+
+    .industries-label {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      background: #e74c3c;
+      color: white;
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    .container {
+      max-width: 1200px;
+    }
+
+    h2.section-title {
+      text-align: center;
+      margin: 50px 0 40px;
+      color: #2c3e50;
+      font-weight: 700;
+      position: relative;
+    }
+
+    h2.section-title:after {
+      content: '';
+      display: block;
+      width: 80px;
+      height: 4px;
+      background: #3498db;
+      margin: 15px auto;
+      border-radius: 2px;
+    }
+
+    @media (max-width: 768px) {
+      .header-section h1 {
+        font-size: 2rem;
+      }
+
+      .header-section p {
+        font-size: 1rem;
+      }
+    }
+  </style>
+
+</head>
+
+<body>
+
+  <nav class="navbar navbar-expand-lg py-3 pt-4 shadow-sm section-navbar fixed-top"
+    style="background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);">
+    <div class="container">
+      <!-- Logo with animation -->
+      <a class="navbar-brand d-flex align-items-center" href="index.html">
+        <h2 class="fw-bold">
+
+          <span class="headings-colors">Deepak Rajput</span>
+        </h2>
+      </a>
+
+      <!-- Toggle Button with animation icon -->
+      <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar">
+        <span class="navbar-toggler-icon">
+          <div class="animated-toggler"></div>
+          <div class="animated-toggler"></div>
+          <div class="animated-toggler"></div>
+        </span>
+      </button>
+
+      <!-- Offcanvas Sidebar with modern design -->
+      <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar">
+        <div class="offcanvas-header border-bottom border-secondary">
+          <h5 class="offcanvas-title text-gradient">Best Designs</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
+        </div>
+
+        <div class="offcanvas-body">
+          <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+
+            <!-- Our Programs with modern dropdown -->
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle text-white hover-underline" href="#" role="button"
+                data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="fas fa-graduation-cap me-1"></i> Our Designs
+              </a>
+              <ul class="dropdown-menu dropdown-menu-dark animate-pop">
+
+
+                <li class="fonts-sizes">
+                  <a class="dropdown-item hover-slide" href="all-designs.html">
+                    <i class="fas fa-rocket me-2"></i> All Designs
+                  </a>
+                </li>
+                <li class="fonts-sizes">
+                  <a class="dropdown-item hover-slide" href="3danimation.html">
+                    <i class="fas fa-cube me-2"></i> 3D Animation
+                  </a>
+                </li>
+                <li class="fonts-sizes">
+                  <a class="dropdown-item hover-slide" href="2danimation.html">
+                    <i class="fas fa-paint-brush me-2"></i> 2D Animation
+                  </a>
+                </li>
+                <li><a class="dropdown-item hover-slide" href="game-art-designing.html"><i
+                      class="fas fa-gamepad me-2"></i> Game Art Design</a>
+                </li>
+
+                <li class="fonts-sizes">
+                  <a class="dropdown-item hover-slide" href="graphic-design.html">
+                    <i class="fas fa-palette me-2"></i> Graphic Design
+                  </a>
+                </li>
+                <li class="fonts-sizes">
+                  <a class="dropdown-item hover-slide" href="motion-graphics.html">
+                    <i class="fas fa-film me-2"></i> Motion Graphics
+                  </a>
+                </li>
+              </ul>
+            </li>
+
+            <!-- Admissions Button with animation -->
+            <li class="nav-item ms-lg-2">
+              <a href="get-touch.html" class="btn btn-enquiry px-4 py-2 text-white">
+                <span class="btn-text">Get in Touch</span>
+                <i class="fas fa-arrow-right ms-2 btn-icon"></i>
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <div class="stars" id="stars">
+    <div class="section-sliders">
+
+      <div class="container course-section py-5">
+        <div class="row align-items-center text-start">
+          <!-- Left Text Content -->
+          <div class="col-lg-6 mb-4 mb-lg-0">
+            <div class="course-subtitle">Motion Graphic</div>
+            <ul class="course-list list-unstyled">
+              <li><b>Bold Typography</b> – Animated text is leading campaigns with dynamic kinetic styles.</li>
+              <li><b>3D Motion Graphics</b> – Combining 2D graphics with 3D depth for futuristic visuals.</li>
+              <li><b>Micro-Animations</b> – Small, subtle animations enhance UI/UX and brand storytelling.</li>
+              <li><b>AI-Assisted Motion</b> – AI tools help generate transitions, effects, and even animation concepts.
+              </li>
+              <li><b>Logo Animation</b> – Brands rely on sleek animated logos for identity and recall.</li>
+            </ul>
+
+          </div>
+
+          <!-- Right Images Content -->
+          <div class="col-lg-6 col-md-12 col-sm-6">
+
+            <div class=" image-grid">
+
+              <div class="col-lg-6">
+
+                <img src="assets/3d-music-related-scene.png" alt="Image 2" width="500px" class="rounded">
+
+              </div>
+            </div>
+
+          </div>
+
+
+        </div>
+      </div>
+
+      <div class="container py-5">
+
+        <div class="row g-4" id="course-container">
+
+          <div class="col-md-4 col-lg-4">
+            <div class="course-card shadow">
+              <img src="assets/car-race.png" alt="3D Animation" class="card-img-bottom" />
+              <div class="p-3">
+                <h5 class="card-title">Car Slider</h5>
+                <a href="car-slider.html" target="_blank" class="learn-more text-decoration-none">View
+                  <i class="fas fa-arrow-right ms-1"></i></a>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-4 col-lg-4">
+            <div class="course-card shadow">
+              <img src="assets/slider-animation.png" alt="3D Animation" class="card-img-bottom" />
+              <div class="p-3">
+                <h5 class="card-title">GSAP Slider</h5>
+                <a href="gsap-slider.html" target="_blank" class="learn-more text-decoration-none">View
+                  <i class="fas fa-arrow-right ms-1"></i></a>
+              </div>
+            </div>
+          </div>
+
+          <!-- 3D Animation Card -->
+          <div class="col-md-4 col-lg-4">
+            <div class="course-card shadow">
+              <img src="assets/animtion.png" alt="2D Animation" class="card-img-bottom" />
+              <div class="p-3">
+                <h5 class="card-title">Mouse Hover Effect Animation </h5>
+                <a href="love-animation.html" target="_blank" class="learn-more text-decoration-none">View<i
+                    class="fas fa-arrow-right ms-1"></i></a>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-4 col-lg-4">
+            <div class="course-card shadow">
+              <img src="image/cycle-product.png" alt="2D Animation" class="card-img-bottom" />
+              <div class="p-3">
+                <h5 class="card-title"> Cycle Animation </h5>
+                <a href="cycle-product.html" target="_blank" class="learn-more text-decoration-none">View<i
+                    class="fas fa-arrow-right ms-1"></i></a>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-4 col-lg-4">
+            <div class="course-card shadow">
+              <img src="image/GSAP Animation.png" alt="Price-Range" class="card-img-bottom" />
+              <div class="p-3">
+                <h5 class="card-title">Game Art GSAP Animation </h5>
+                <a href="gsap-animation.html" target="_blank" class="learn-more text-decoration-none">View
+                  <i class="fas fa-arrow-right ms-1"></i></a>
+              </div>
+            </div>
+          </div>
+
+
+          <div class="col-md-4 col-lg-4">
+            <div class="course-card shadow">
+              <img src="assets/error.png" alt="3D Card Hover" class="card-img-bottom" />
+              <div class="p-3">
+                <h5 class="card-title"> Error Page </h5>
+                <a href="error.html" target="_blank" class="learn-more text-decoration-none">View
+                  <i class="fas fa-arrow-right ms-1"></i></a>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-4 col-lg-4">
+            <div class="course-card shadow">
+              <img src="image/landing-page.gif" alt="Animation Landing Pag" class="card-img-bottom" />
+              <div class="p-3">
+                <h5 class="card-title"> Animation Landing Page </h5>
+                <a href="landing-page.html" target="_blank" class="learn-more text-decoration-none">View
+                  <i class="fas fa-arrow-right ms-1"></i></a>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-4 col-lg-4">
+            <div class="course-card shadow">
+              <img src="assets/game-art.png" alt="Game Art Design" class="card-img-bottom" />
+              <div class="p-3">
+                <h5 class="card-title"> Game Art Design </h5>
+                <a href="game-art-design.html" target="_blank" class="learn-more text-decoration-none">View
+                  <i class="fas fa-arrow-right ms-1"></i></a>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-4 col-lg-4">
+            <div class="course-card shadow">
+              <img src="image/Wood Product.jpg" alt="Wood Product" class="card-img-bottom" />
+              <div class="p-3">
+                <h5 class="card-title"> Wood Animated Product </h5>
+                <a href="product-page.html" target="_blank" class="learn-more text-decoration-none">View
+                  <i class="fas fa-arrow-right ms-1"></i></a>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-4 col-lg-4">
+            <div class="course-card shadow">
+              <img src="assets/product-card.png" alt="3D Animation" class="card-img-bottom" />
+              <div class="p-3">
+                <h5 class="card-title">Product Card</h5>
+                <a href="Product-Card.html" target="_blank" class="learn-more text-decoration-none">View
+                  <i class="fas fa-arrow-right ms-1"></i></a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card Reveal Animation Card -->
+          <div class="col-md-4 col-lg-4">
+            <div class="course-card shadow">
+              <img src="image/card-reveal-animation.webp" alt="Card Reveal Animation" class="card-img-bottom" />
+              <div class="p-3">
+                <h5 class="card-title">Card Reveal Animation</h5>
+                <a href="Card-Reveal-Animation.html" target="_blank" class="learn-more text-decoration-none">View
+                  <i class="fas fa-arrow-right ms-1"></i></a>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-4 col-lg-4">
+            <div class="course-card shadow">
+              <img src="image/Slider-Form.gif" alt="Price-Range" class="card-img-bottom" />
+              <div class="p-3">
+                <h5 class="card-title"> Slider Form </h5>
+                <a href="slider-sign-form.html" target="_blank" class="learn-more text-decoration-none">View
+                  <i class="fas fa-arrow-right ms-1"></i></a>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-4 col-lg-4">
+            <div class="course-card shadow">
+              <img src="image/Emoji Loader.gif" alt="Price-Range" class="card-img-bottom" />
+              <div class="p-3">
+                <h5 class="card-title"> Emoji Loader </h5>
+                <a href="emoji-loader.html" target="_blank" class="learn-more text-decoration-none">View
+                  <i class="fas fa-arrow-right ms-1"></i></a>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-4 col-lg-4">
+            <div class="course-card shadow">
+              <img src="image/Futuristic-3d-Hover.gif" alt="Price-Range" class="card-img-bottom" />
+              <div class="p-3">
+                <h5 class="card-title">Futuristic-3d-Hover </h5>
+                <a href="hover-me.html" target="_blank" class="learn-more text-decoration-none">View
+                  <i class="fas fa-arrow-right ms-1"></i></a>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-4 col-lg-4">
+            <div class="course-card shadow">
+              <img src="image/Hover Card-responsive.gif" alt="Wood Product" class="card-img-bottom" />
+              <div class="p-3">
+                <h5 class="card-title"> Hover Card Responsive </h5>
+                <a href="responsive-card.html" target="_blank" class="learn-more text-decoration-none">View
+                  <i class="fas fa-arrow-right ms-1"></i></a>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-4 col-lg-4">
+            <div class="course-card shadow">
+              <img src="image/swipper-select.png" alt="Slide Product Card" class="card-img-bottom" />
+              <div class="p-3">
+                <h5 class="card-title">Swipper Gallery </h5>
+                <a href="swiper-gallery.html" target="_blank" class="learn-more text-decoration-none">View
+                  <i class="fas fa-arrow-right ms-1"></i></a>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-4 col-lg-4">
+            <div class="course-card shadow">
+              <img src="image/Smoke Effects.jpg" alt="Smoke Effects" class="card-img-bottom" />
+              <div class="p-3">
+                <h5 class="card-title"> Smoke Effects </h5>
+                <a href="smoke.html" target="_blank" class="learn-more text-decoration-none">View
+                  <i class="fas fa-arrow-right ms-1"></i></a>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-4 col-lg-4">
+            <div class="course-card shadow">
+              <img src="image/table-flipping.png" alt="Table Flipping" class="card-img-bottom" />
+              <div class="p-3">
+                <h5 class="card-title"> Table Flipping </h5>
+                <a href="table-flipping.html" target="_blank" class="learn-more text-decoration-none">View
+                  <i class="fas fa-arrow-right ms-1"></i></a>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-4 col-lg-4">
+            <div class="course-card shadow">
+              <img src="image/travel-pricing.png" alt=" Travel Image Rotate " class="card-img-bottom" />
+              <div class="p-3">
+                <h5 class="card-title"> Travel Image Rotate </h5>
+                <a href="travel-pricing.html" target="_blank" class="learn-more text-decoration-none">View
+                  <i class="fas fa-arrow-right ms-1"></i></a>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-4 col-lg-4">
+            <div class="course-card shadow">
+              <img src="image/Animated log-in.jpg" alt="2D Login Form" class="card-img-bottom" />
+              <div class="p-3">
+                <h5 class="card-title"> 2D Login Form </h5>
+                <a href="2d-login.html" target="_blank" class="learn-more text-decoration-none">View
+                  <i class="fas fa-arrow-right ms-1"></i></a>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-4 col-lg-4">
+            <div class="course-card shadow">
+              <img src="image/circle-swap-photo-gallery.webp" alt="Circle swiper-gallery" class="card-img-bottom" />
+              <div class="p-3">
+                <h5 class="card-title"> Circle swiper-gallery </h5>
+                <a href="circle-swap.html" target="_blank" class="learn-more text-decoration-none">View
+                  <i class="fas fa-arrow-right ms-1"></i></a>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-4 col-lg-4">
+            <div class="course-card shadow">
+              <img src="image/collapse-gallery.png" alt=" Collapse Gallery" class="card-img-bottom" />
+              <div class="p-3">
+                <h5 class="card-title"> Collapse Gallery </h5>
+                <a href="collapse-gallery.html" target="_blank" class="learn-more text-decoration-none">View
+                  <i class="fas fa-arrow-right ms-1"></i></a>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+
+    <!-- scroll-top -->
+    <div class="scroll-top" onclick="window.scrollTo({ top: 0, behavior: 'smooth' });">
+      ↑
+    </div>
+
+    <footer class="footer">
+      <div class="container">
+
+        <!-- Navigation Links Section -->
+        <div class="row pt-3">
+          <!-- Student Zone -->
+          <div class="col-md-3 col-sm-6 mb-4">
+            <h5>Website Design </h5>
+            <ul class="list-unstyled text-justify">
+              <li>Modern website design merges 3D, 2D animation, Game Art Designs and graphic design for engaging user
+                experiences. 3D adds depth, 2D drives storytelling, and graphic design enhances branding with bold
+                typography and clean layouts—creating dynamic, interactive, and visually impactful websites.
+              </li>
+            </ul>
+          </div>
+
+          <!-- Our Programs -->
+          <div class="col-md-3 col-sm-6 mb-4">
+            <h5>Our Programs</h5>
+            <ul class="list-unstyled">
+              <li><a href="all-designs.html">All Designs</a></li>
+              <li><a href="3danimation.html">3D Animation</a></li>
+              <li><a href="2danimation.html">2D Animation</a></li>
+              <li><a href="graphic-design.html">Graphic Design</a></li>
+              <li><a href="motion-graphics.html">Motion Graphics</a></li>
+              <li><a href="game-art-designing.html">Game Art Design</a></li>
+            </ul>
+          </div>
+
+
+          <!-- Careers & Contact -->
+          <div class="col-md-3 col-sm-6 mb-4">
+            <h5>Contact</h5>
+            <ul class="list-unstyled">
+              <li class="mt-3">
+                <!-- <h6>Contact Us</h6> -->
+                <div style="opacity: 0.8;">
+                  <p class="mb-1">
+                    <i class="fa-solid fa-phone me-2"></i>
+                    <a class="align-items-center text-white text-decoration-none" href="tel:+919050450019">
+                      +91 9050450019
+                    </a>
+                  </p>
+                  <p class="mb-1">
+                    <i class="fa-solid fa-envelope me-2"></i>
+                    <a class="text-white text-decoration-none" href="mailto:business@deepakrajput.com">
+                      business@deepakrajput.com
+                    </a>
+                  </p>
+                </div>
+
+              </li>
+            </ul>
+            <h6>Follow Us</h6>
+            <div class="social-icons">
+              <a href="https://www.facebook.com/people/Neebha-Web-Services-Private-Limited/61573324153099/"
+                class="text-white mx-2" target="_blank"><i class="fab fa-facebook-f"></i></a>
+              <!-- <a href="https://www.pinterest.com/zicazimaludhiana/" class="text-white mx-2" target="_blank"><i
+                    class="fab fa-pinterest"></i></a> -->
+              <a href="https://www.instagram.com/neebhawebservices/" class="text-white mx-2" target="_blank"><i
+                  class="fab fa-instagram"></i></a>
+              <a href="https://www.linkedin.com/onboarding/start/profile-location/new/?session_redirect=https%3A%2F%2Fin.linkedin.com%2Fcompany%2Fneebha-web-services-private-limited&source=coreg"
+                target="_blank" class="text-white mx-2"><i class="fab fa-linkedin-in"></i></a>
+              <!-- <a href="https://www.youtube.com/@ZICAZIMA" class="text-white mx-2" target="_blank"><i
+                    class="fab fa-youtube"></i></a> -->
+            </div>
+          </div>
+
+          <div class="col-md-3 col-sm-6 mb-4 newsletter">
+            <h5>Newsletter</h5>
+            <p class="mb-1">Subscribe our newsletter:</p>
+            <input type="email" required="" name="entry.1776637829" class="footer-form-control" id="entry.1776637829"
+              placeholder="Enter Your Email">
+            <a href="index.html" class="btn btn-enquiry px-4 py-2 text-white">
+              <span class="btn-text">Subscribe Now</span>
+              <i class="fas fa-arrow-right ms-2 btn-icon"></i>
+            </a>
+          </div>
+        </div>
+
+
+        <!-- Resources & Copyright Section -->
+        <div class="row mt-4">
+          <div class="col-lg-12">
+            <div class="d-flex flex-wrap justify-content-center  align-items-center">
+              <div class="copyright text-center text-md-left">
+                © 2025 All rights reserved.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+  </div>
+  <script src="main.js"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+    crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+  <script>
+    jQuery('#hiddendIframe').on('load', function () {
+      Swal.fire({
+        title: 'Success!',
+        text: 'Form submitted successfully.',
+        icon: 'success',
+        confirmButtonText: 'OK'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          location.reload(); // Refresh the page
+        }
+      });
+    });
+  </script>
+
+</body>
+
+</html>

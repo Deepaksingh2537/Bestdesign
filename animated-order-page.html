@@ -1,0 +1,1045 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Animated Order Page</title>
+
+  <!-- Script Add -->
+  <script src="./main.js"></script>
+
+  <!-- Script Add -->
+  <script src="./main.js"></script>
+  <style>
+    :root {
+      --bg1: #0f1020;
+      --bg2: #1a1b3a;
+      --accent: #8b5cf6;
+      --accent-2: #22d3ee;
+      --text: #f8fafc;
+      --muted: #a5b4fc;
+      --card: #151629;
+      --card-2: #0b0c17;
+      --success: #10b981;
+      --danger: #ef4444;
+      --warning: #f59e0b;
+      --shadow: 0 10px 30px rgba(0, 0, 0, .35), 0 6px 12px rgba(0, 0, 0, .25);
+      --radius: 20px;
+    }
+
+    * {
+      box-sizing: border-box
+    }
+
+    html,
+    body {
+      height: 100%
+    }
+
+    body {
+      margin: 0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, "Helvetica Neue", Arial;
+      color: var(--text);
+      background: radial-gradient(1200px 800px at 10% 10%, #1b1c3f 0%, transparent 60%),
+        radial-gradient(1000px 600px at 90% -10%, #0b2b3b 0%, transparent 60%),
+        linear-gradient(140deg, var(--bg1), var(--bg2));
+      overflow-x: hidden;
+    }
+
+    /* Animated gradient sheen */
+    body::before {
+      content: "";
+      position: fixed;
+      inset: -20%;
+      pointer-events: none;
+      z-index: -1;
+      background:
+        conic-gradient(from 45deg,
+          rgba(139, 92, 246, 0.35),
+          rgba(34, 211, 238, 0.35),
+          rgba(236, 72, 153, 0.35),
+          rgba(139, 92, 246, 0.35)),
+        radial-gradient(circle at center,
+          rgba(255, 255, 255, 0.1) 0%,
+          rgba(0, 0, 0, 0.9) 100%);
+      background-blend-mode: overlay;
+
+      filter: blur(120px) saturate(140%);
+      animation: swirl 20s linear infinite;
+    }
+
+    @keyframes swirl {
+      to {
+        transform: rotate(360deg)
+      }
+    }
+
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      backdrop-filter: blur(8px);
+      background: linear-gradient(to bottom, rgba(10, 11, 25, .8), rgba(10, 11, 25, .2));
+      border-bottom: 1px solid rgba(148, 163, 184, .08);
+    }
+
+    .nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px clamp(16px, 6vw, 48px);
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 800;
+      letter-spacing: .3px
+    }
+
+    .logo i {
+      width: 36px;
+      height: 36px;
+      display: inline-grid;
+      place-items: center;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      box-shadow: 0 10px 20px rgba(139, 92, 246, .35), inset 0 0 12px rgba(255, 255, 255, .15);
+    }
+
+    .nav .actions {
+      display: flex;
+      align-items: center;
+      gap: 12px
+    }
+
+    .btn {
+      appearance: none;
+      border: 0;
+      border-radius: 14px;
+      padding: 12px 16px;
+      color: var(--text);
+      font-weight: 700;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      background: #20223f;
+      box-shadow: var(--shadow);
+      transform: translateZ(0);
+    }
+
+    .btn.primary {
+
+      position: relative;
+      overflow: hidden;
+      color: #fff;
+      border-radius: 12px;
+      padding: 12px 24px;
+    }
+
+    .btn.primary::after {
+      content: "";
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: conic-gradient(from 180deg,
+          rgba(255, 255, 255, 0.3),
+          transparent,
+          transparent,
+          rgba(255, 255, 255, 0.3));
+      animation: rotate 4s linear infinite;
+    }
+
+    @keyframes rotate {
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+
+
+    .btn.ghost {
+      background: transparent;
+      border: 1px solid rgba(148, 163, 184, .18);
+      box-shadow: none
+    }
+
+    .btn .badge {
+      position: absolute;
+      top: -8px;
+      right: -8px;
+      background: var(--warning);
+      color: #111;
+      font-size: 12px;
+      border-radius: 999px;
+      padding: 4px 7px;
+      box-shadow: var(--shadow)
+    }
+
+    .btn:active {
+      transform: translateY(1px)
+    }
+
+    /* Ripple effect */
+    .ripple {
+      position: absolute;
+      border-radius: 999px;
+      transform: translate(-50%, -50%) scale(0);
+      animation: ripple .6s ease-out forwards;
+      pointer-events: none;
+      background: rgba(255, 255, 255, .45)
+    }
+
+    @keyframes ripple {
+      to {
+        transform: translate(-50%, -50%) scale(6);
+        opacity: 0
+      }
+    }
+
+    .hero {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: clamp(32px, 6vw, 64px) clamp(16px, 6vw, 48px) 24px;
+      display: grid;
+      grid-template-columns: 1.2fr .8fr;
+      gap: 28px;
+      align-items: center
+    }
+
+    @media (max-width: 900px) {
+      .hero {
+        grid-template-columns: 1fr;
+        text-align: center
+      }
+    }
+
+    .headline {
+      font-size: clamp(28px, 5vw, 56px);
+      line-height: 1.05;
+      margin: 0 0 14px;
+      letter-spacing: .2px
+    }
+
+    .sub {
+      opacity: .8;
+      margin: 0 0 20px;
+      font-size: clamp(14px, 2.2vw, 18px)
+    }
+
+    .hero-card {
+      background: radial-gradient(120% 120% at 0% 0%, rgba(139, 92, 246, .18), transparent 60%),
+        radial-gradient(120% 120% at 100% 100%, rgba(34, 211, 238, .18), transparent 60%),
+        linear-gradient(180deg, var(--card), var(--card-2));
+      border: 1px solid rgba(148, 163, 184, .14);
+      border-radius: var(--radius);
+      padding: 28px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+    }
+
+    .floating-blobs span {
+      position: absolute;
+      filter: blur(18px);
+      opacity: .5;
+      border-radius: 40% 60% 60% 40% / 40% 40% 60% 60%;
+      animation: blob 24s ease-in-out infinite alternate;
+    }
+
+    .floating-blobs span:nth-child(1) {
+      width: 220px;
+      height: 220px;
+      left: -40px;
+      top: -40px;
+      background: radial-gradient(circle at 30% 30%, #9f7aea, transparent 60%)
+    }
+
+    .floating-blobs span:nth-child(2) {
+      width: 260px;
+      height: 260px;
+      right: -80px;
+      bottom: -80px;
+      animation-duration: 28s;
+      background: radial-gradient(circle at 70% 70%, #22d3ee, transparent 60%)
+    }
+
+    @keyframes blob {
+      to {
+        transform: translate(20px, -10px) rotate(20deg) scale(1.1)
+      }
+    }
+
+    .cta-row {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      justify-content: flex-start
+    }
+
+    @media (max-width: 900px) {
+      .cta-row {
+        justify-content: center
+      }
+    }
+
+    /* Menu Grid */
+    .section {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 12px clamp(16px, 6vw, 48px) 72px
+    }
+
+    .section h2 {
+      font-size: clamp(20px, 3vw, 32px);
+      margin: 0 0 16px
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px
+    }
+
+    @media (max-width: 1000px) {
+      .grid {
+        grid-template-columns: repeat(2, 1fr)
+      }
+    }
+
+    @media (max-width: 640px) {
+      .grid {
+        grid-template-columns: 1fr
+      }
+    }
+
+    .card {
+      position: relative;
+      background: linear-gradient(180deg, #14162a, #0e1020);
+      border: 1px solid rgba(148, 163, 184, .12);
+      border-radius: 18px;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      transition: transform .25s ease, box-shadow .25s ease
+    }
+
+    .card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, .45)
+    }
+
+    .media {
+      height: 180px;
+      background: radial-gradient(80% 80% at 50% 0%, rgba(255, 255, 255, .06), transparent 70%),
+        linear-gradient(135deg, rgba(139, 92, 246, .35), rgba(34, 211, 238, .25));
+      display: grid;
+      place-items: center;
+    }
+
+    .media svg {
+      filter: drop-shadow(0 8px 20px rgba(0, 0, 0, .65))
+    }
+
+    .content {
+      padding: 16px
+    }
+
+    .row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px
+    }
+
+    .price {
+      font-weight: 800;
+      color: #e2e8f0
+    }
+
+    .muted {
+      opacity: .8
+    }
+
+    .qty {
+      display: flex;
+      align-items: center;
+      background: #0c0d1a;
+      border: 1px solid rgba(148, 163, 184, .18);
+      border-radius: 12px
+    }
+
+    .qty button {
+      background: transparent;
+      border: 0;
+      color: var(--text);
+      font-size: 18px;
+      width: 32px;
+      height: 32px;
+      cursor: pointer
+    }
+
+    .qty input {
+      width: 40px;
+      background: transparent;
+      border: 0;
+      color: var(--text);
+      text-align: center;
+      font-weight: 700
+    }
+
+    /* Cart Drawer */
+    .drawer {
+      position: fixed;
+      right: 18px;
+      top: 84px;
+      width: min(420px, calc(100% - 36px));
+      max-height: 78vh;
+      overflow: auto;
+      background: linear-gradient(180deg, #0d0e1b, #0a0b17);
+      border: 1px solid rgba(148, 163, 184, .16);
+      border-radius: 22px;
+      box-shadow: var(--shadow);
+      transform: translateY(20px) scale(.98);
+      opacity: 0;
+      pointer-events: none;
+      transition: .25s ease
+    }
+
+    .drawer.open {
+      transform: none;
+      opacity: 1;
+      pointer-events: auto
+    }
+
+    .drawer h3 {
+      margin: 0 0 12px
+    }
+
+    .cart-item {
+      display: grid;
+      grid-template-columns: 56px 1fr auto;
+      gap: 12px;
+      align-items: center;
+      padding: 12px;
+      border-radius: 14px;
+      border: 1px solid rgba(148, 163, 184, .08);
+      background: #0e1020
+    }
+
+    .cart-item img {
+      width: 56px;
+      height: 56px;
+      object-fit: cover;
+      border-radius: 12px
+    }
+
+    .cart-item .title {
+      font-weight: 700
+    }
+
+    .cart-footer {
+      display: grid;
+      gap: 10px;
+      padding: 16px;
+      border-top: 1px dashed rgba(148, 163, 184, .16)
+    }
+
+    .rowline {
+      display: flex;
+      align-items: center;
+      justify-content: space-between
+    }
+
+    .total {
+      font-size: 20px;
+      font-weight: 900
+    }
+
+    /* Checkout Modal */
+    .overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, .6);
+      display: none;
+      place-items: center;
+      z-index: 60
+    }
+
+    .overlay.open {
+      display: grid
+    }
+
+    .modal {
+      width: min(760px, 94vw);
+      background: linear-gradient(180deg, #0d0f22, #0b0d1e);
+      border: 1px solid rgba(148, 163, 184, .18);
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+      overflow: hidden
+    }
+
+    .modal header {
+      position: sticky;
+      top: 0;
+      background: transparent;
+      border: 0
+    }
+
+    .steps {
+      display: flex;
+      gap: 10px;
+      padding: 16px;
+      background: linear-gradient(180deg, rgba(139, 92, 246, .08), transparent)
+    }
+
+    .chip {
+      flex: 1;
+      padding: 10px;
+      text-align: center;
+      border-radius: 12px;
+      border: 1px solid rgba(148, 163, 184, .18);
+      position: relative
+    }
+
+    .chip.active {
+      background: linear-gradient(135deg, rgba(139, 92, 246, .25), rgba(34, 211, 238, .2));
+      border-color: transparent
+    }
+
+    .modal-body {
+      padding: 18px 18px 22px
+    }
+
+    .step {
+      display: none;
+      animation: slideIn .35s ease
+    }
+
+    .step.active {
+      display: block
+    }
+
+    @keyframes slideIn {
+      from {
+        transform: translateY(10px);
+        opacity: 0
+      }
+
+      to {
+        transform: none;
+        opacity: 1
+      }
+    }
+
+    form .field {
+      display: grid;
+      gap: 6px;
+      margin: 12px 0
+    }
+
+    form label {
+      opacity: .85
+    }
+
+    input,
+    select,
+    textarea {
+      background: #0b0c17;
+      border: 1px solid rgba(148, 163, 184, .18);
+      border-radius: 12px;
+      padding: 12px 14px;
+      color: var(--text);
+      outline: none
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      box-shadow: 0 0 0 2px rgba(139, 92, 246, .45)
+    }
+
+    .modal-footer {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 16px;
+      background: #0a0b17;
+      border-top: 1px solid rgba(148, 163, 184, .12)
+    }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: #0e1020;
+      border: 1px solid rgba(148, 163, 184, .18);
+      box-shadow: var(--shadow);
+      padding: 10px 14px;
+      border-radius: 12px;
+      opacity: 0;
+      transition: .25s ease;
+      z-index: 70
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0)
+    }
+
+    /* Confetti Canvas */
+    canvas#confetti {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 70
+    }
+
+    /* Footer */
+    footer {
+      opacity: .7;
+      text-align: center;
+      padding: 18px;
+      font-size: 14px
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <nav class="nav" aria-label="Main Navigation">
+      <div class="logo" aria-label="Brand">
+        <span>Animated Order</span>
+      </div>
+      <div class="actions">
+        <button class="btn ghost" id="startOrderBtn">Start Order</button>
+        <button class="btn" id="cartBtn" aria-expanded="false" aria-controls="cartDrawer">
+          Cart
+          <span class="badge" id="cartCount">0</span>
+        </button>
+      </div>
+    </nav>
+  </header>
+
+  <section class="hero">
+    <div>
+      <h1 class="headline">An animated, modern ordering page</h1>
+      <p class="sub">Micro‑interactions, a snappy cart drawer, and a delightful checkout flow. No frameworks required.
+      </p>
+      <div class="cta-row">
+        <button class="btn primary" id="shopNow">Shop the Menu</button>
+        <button class="btn ghost" id="scrollToInfo">Learn More</button>
+      </div>
+    </div>
+    <div class="hero-card">
+      <div class="floating-blobs" aria-hidden="true">
+        <span></span><span></span>
+      </div>
+      <h3 style="margin:0 0 12px">Today’s Picks</h3>
+      <div class="grid" style="grid-template-columns:repeat(2,1fr); gap:12px">
+        <div class="card mini">
+          <div class="media">
+            <svg width="70" height="70" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"
+              aria-hidden="true">
+              <path d="M19 7H5l1 12h12l1-12Z" stroke="currentColor" stroke-width="1.5" />
+              <path d="M8 7V6a4 4 0 1 1 8 0v1" stroke="currentColor" stroke-width="1.5" />
+            </svg>
+          </div>
+          <div class="content">
+            <div class="row"><strong>Vanilla Latte</strong><span class="price">₹199</span></div>
+          </div>
+        </div>
+        <div class="card mini">
+          <div class="media">
+            <svg width="70" height="70" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"
+              aria-hidden="true">
+              <path d="M4 6h16l-2 12H6L4 6Z" stroke="currentColor" stroke-width="1.5" />
+              <path d="M10 10h4M9 14h6" stroke="currentColor" stroke-width="1.5" />
+            </svg>
+          </div>
+          <div class="content">
+            <div class="row"><strong>Veg Wrap</strong><span class="price">₹149</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="menu" class="section" aria-labelledby="menuHeading">
+    <h2 id="menuHeading">Menu</h2>
+    <div id="productGrid" class="grid" aria-live="polite"></div>
+  </section>
+
+  <section id="info" class="section">
+    <h2>What’s inside</h2>
+    <p class="muted">The standard lorem ipsum passage has been a printer's friend for centuries. Like stock photos
+      today, it served as a placeholder for actual content. The original text comes from Cicero's philosophical work "De
+      Finibus Bonorum et Malorum," written in 45 BC.</p>
+  </section>
+
+  <!-- Cart Drawer -->
+  <aside class="drawer" id="cartDrawer" aria-label="Cart Drawer" aria-hidden="true">
+    <div style="padding:16px">
+      <h3>Your Cart</h3>
+      <div id="cartItems" class="stack" style="display:grid; gap:10px"></div>
+    </div>
+    <div class="cart-footer">
+      <div class="rowline"><span>Subtotal</span><strong id="subtotal">₹0</strong></div>
+      <div class="rowline"><span>Tax (5%)</span><span id="tax">₹0</span></div>
+      <div class="rowline"><span>Delivery</span><span id="shipping">₹30</span></div>
+      <div class="rowline" style="border-top:1px dashed rgba(148,163,184,.16); padding-top:8px">
+        <span class="total">Total</span><span class="total" id="total">₹30</span>
+      </div>
+      <button class="btn primary" id="checkoutBtn">Checkout</button>
+    </div>
+  </aside>
+
+  <!-- Checkout Modal -->
+  <div class="overlay" id="checkoutOverlay" role="dialog" aria-modal="true" aria-labelledby="checkoutTitle">
+    <div class="modal">
+      <header>
+        <div class="steps">
+          <div class="chip active" data-step-index="0">1. Shipping</div>
+          <div class="chip" data-step-index="1">2. Payment</div>
+          <div class="chip" data-step-index="2">3. Review</div>
+        </div>
+      </header>
+      <div class="modal-body">
+        <div class="step active" data-step="shipping">
+          <h3 id="checkoutTitle" style="margin:0 0 8px">Shipping Details</h3>
+          <form id="shippingForm">
+            <div class="field">
+              <label for="name">Full Name</label>
+              <input id="name" name="name" placeholder="e.g., Asha Verma" required />
+            </div>
+            <div class="field">
+              <label for="phone">Phone</label>
+              <input id="phone" name="phone" type="tel" pattern="[0-9]{10}" placeholder="10-digit number" required />
+            </div>
+            <div class="field">
+              <label for="address">Address</label>
+              <textarea id="address" name="address" rows="3" required></textarea>
+            </div>
+            <div class="field" style="grid-template-columns:1fr 1fr; display:grid; gap:12px">
+              <div>
+                <label for="city">City</label>
+                <input id="city" name="city" required />
+              </div>
+              <div>
+                <label for="pincode">PIN Code</label>
+                <input id="pincode" name="pincode" pattern="[0-9]{6}" required />
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="step" data-step="payment">
+          <h3 style="margin:0 0 8px">Payment</h3>
+          <form id="paymentForm">
+            <div class="field">
+              <label for="card">Card Number</label>
+              <input id="card" name="card" inputmode="numeric" maxlength="19" placeholder="1234 5678 9012 3456"
+                required />
+            </div>
+            <div class="field" style="display:grid; grid-template-columns: 1fr 1fr; gap:12px">
+              <div>
+                <label for="exp">Expiry</label>
+                <input id="exp" name="exp" placeholder="MM/YY" required />
+              </div>
+              <div>
+                <label for="cvv">CVV</label>
+                <input id="cvv" name="cvv" inputmode="numeric" maxlength="4" placeholder="123" required />
+              </div>
+            </div>
+            <div class="field">
+              <label for="method">Method</label>
+              <select id="method" name="method">
+                <option>Credit Card</option>
+                <option>Debit Card</option>
+                <option>UPI</option>
+                <option>Cash on Delivery</option>
+              </select>
+            </div>
+          </form>
+        </div>
+        <div class="step" data-step="review">
+          <h3 style="margin:0 0 8px">Review & Place Order</h3>
+          <div id="reviewBlock" class="muted"></div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn ghost" id="backBtn">Back</button>
+        <div style="display:flex; gap:10px">
+          <button class="btn" id="cancelBtn">Cancel</button>
+          <button class="btn primary" id="nextBtn">Next</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <canvas id="confetti"></canvas>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    // --- Utilities ---
+    const formatINR = (n) => `₹${n.toLocaleString('en-IN')}`;
+
+    function addRipple(e) {
+      const btn = e.currentTarget;
+      const rect = btn.getBoundingClientRect();
+      const x = e.clientX - rect.left; const y = e.clientY - rect.top;
+      const span = document.createElement('span');
+      span.className = 'ripple';
+      span.style.left = x + 'px'; span.style.top = y + 'px';
+      btn.appendChild(span);
+      setTimeout(() => span.remove(), 650);
+    }
+
+    function toast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg; t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 1500);
+    }
+
+    // --- Products ---
+    const products = [
+      { id: 'latte', name: 'Vanilla Latte', price: 199, desc: 'Espresso, milk, vanilla.', color: '#9f7aea' },
+      { id: 'cap', name: 'Cappuccino', price: 179, desc: 'Bold & foamy delight.', color: '#60a5fa' },
+      { id: 'mocha', name: 'Mocha', price: 229, desc: 'Chocolate espresso fusion.', color: '#f472b6' },
+      { id: 'wrap', name: 'Veg Wrap', price: 149, desc: 'Fresh veggies & sauces.', color: '#34d399' },
+      { id: 'sand', name: 'Paneer Sandwich', price: 169, desc: 'Toasted, cheesy, perfect.', color: '#fb923c' },
+      { id: 'brown', name: 'Fudge Brownie', price: 129, desc: 'Gooey chocolate square.', color: '#f59e0b' }
+    ];
+
+    const grid = document.getElementById('productGrid');
+    products.forEach(p => {
+      const card = document.createElement('div'); card.className = 'card'; card.tabIndex = 0;
+      // Hover tilt
+      card.addEventListener('pointermove', (e) => {
+        const r = card.getBoundingClientRect();
+        const rx = ((e.clientY - r.top) / r.height - .5) * -6;
+        const ry = ((e.clientX - r.left) / r.width - .5) * 6;
+        card.style.transform = `rotateX(${rx}deg) rotateY(${ry}deg)`;
+      });
+      card.addEventListener('pointerleave', () => card.style.transform = '');
+
+      card.innerHTML = `
+        <div class="media" style="background: radial-gradient(90% 80% at 50% 0%, rgba(255,255,255,.06), transparent 60%), linear-gradient(135deg, ${p.color}55, ${p.color}33)">
+          ${cupSVG()}
+        </div>
+        <div class="content">
+          <div class="row"><strong>${p.name}</strong><span class="price">${formatINR(p.price)}</span></div>
+          <p class="muted" style="margin:6px 0 12px">${p.desc}</p>
+          <div class="row">
+            <div class="qty" aria-label="Quantity selector">
+              <button class="dec" aria-label="Decrease">−</button>
+              <input type="number" min="1" value="1" aria-label="Quantity" />
+              <button class="inc" aria-label="Increase">+</button>
+            </div>
+            <button class="btn primary add">Add to Cart</button>
+          </div>
+        </div>`;
+
+      const inc = card.querySelector('.inc'); const dec = card.querySelector('.dec'); const qty = card.querySelector('input');
+      inc.addEventListener('click', e => { qty.value = Math.min(99, Number(qty.value || 1) + 1); addRipple(e) });
+      dec.addEventListener('click', e => { qty.value = Math.max(1, Number(qty.value || 1) - 1); addRipple(e) });
+      const addBtn = card.querySelector('.add');
+      addBtn.addEventListener('pointerdown', addRipple);
+      addBtn.addEventListener('click', () => addToCart(p, Number(qty.value || 1)));
+
+      grid.appendChild(card);
+    });
+
+    function cupSVG() {
+      return `<svg width="72" height="72" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M19 7H5l1 12h12l1-12Z" stroke="currentColor" stroke-width="1.5"/><path d="M8 7V6a4 4 0 1 1 8 0v1" stroke="currentColor" stroke-width="1.5"/></svg>`
+    }
+
+    // --- Cart Logic ---
+    const cart = new Map(); // id -> {product, qty}
+    const cartBtn = document.getElementById('cartBtn');
+    const drawer = document.getElementById('cartDrawer');
+    const cartItems = document.getElementById('cartItems');
+    const subtotalEl = document.getElementById('subtotal');
+    const taxEl = document.getElementById('tax');
+    const totalEl = document.getElementById('total');
+    const cartCount = document.getElementById('cartCount');
+
+    function toggleDrawer(open) {
+      const isOpen = open ?? !drawer.classList.contains('open');
+      drawer.classList.toggle('open', isOpen);
+      drawer.setAttribute('aria-hidden', String(!isOpen));
+      cartBtn.setAttribute('aria-expanded', String(isOpen));
+    }
+
+    cartBtn.addEventListener('click', (e) => { addRipple(e); toggleDrawer(); });
+
+    function addToCart(p, qty = 1) {
+      const entry = cart.get(p.id) || { product: p, qty: 0 };
+      entry.qty += qty; cart.set(p.id, entry);
+      toast(`${p.name} ×${qty} added`);
+      renderCart();
+      drawer.classList.add('open'); drawer.setAttribute('aria-hidden', 'false'); cartBtn.setAttribute('aria-expanded', 'true');
+    }
+
+    function updateQty(id, q) {
+      const e = cart.get(id); if (!e) return; e.qty = Math.max(1, q); renderCart();
+    }
+    function removeItem(id) { cart.delete(id); renderCart(); }
+
+    function renderCart() {
+      cartItems.innerHTML = '';
+      let subtotal = 0;
+      for (const [id, { product, qty }] of cart) {
+        subtotal += product.price * qty;
+        const item = document.createElement('div'); item.className = 'cart-item';
+        item.innerHTML = `
+          <div style="width:56px; height:56px; border-radius:12px; background: linear-gradient(135deg, ${product.color}, transparent)"></div>
+          <div>
+            <div class="title">${product.name}</div>
+            <div class="muted">${formatINR(product.price)} each</div>
+          </div>
+          <div style="display:grid; gap:6px; justify-items:end">
+            <div class="qty">
+              <button aria-label="Decrease" data-act="dec">−</button>
+              <input type="number" min="1" value="${qty}" aria-label="Quantity" />
+              <button aria-label="Increase" data-act="inc">+</button>
+            </div>
+            <button class="btn ghost" data-act="remove">Remove</button>
+          </div>`;
+
+        // listeners
+        const qInput = item.querySelector('input');
+        item.querySelector('[data-act="dec"]').addEventListener('click', e => { qInput.value = Math.max(1, Number(qInput.value) - 1); updateQty(id, Number(qInput.value)); addRipple(e) });
+        item.querySelector('[data-act="inc"]').addEventListener('click', e => { qInput.value = Math.min(99, Number(qInput.value) + 1); updateQty(id, Number(qInput.value)); addRipple(e) });
+        qInput.addEventListener('change', () => updateQty(id, Number(qInput.value)));
+        item.querySelector('[data-act="remove"]').addEventListener('click', e => { removeItem(id); addRipple(e) });
+
+        cartItems.appendChild(item);
+      }
+      const tax = Math.round(subtotal * 0.05);
+      const shipping = cart.size ? 30 : 0;
+      const total = subtotal + tax + shipping;
+      subtotalEl.textContent = formatINR(subtotal);
+      taxEl.textContent = formatINR(tax);
+      totalEl.textContent = formatINR(total);
+      cartCount.textContent = [...cart.values()].reduce((a, b) => a + b.qty, 0);
+    }
+
+    // Scroll & buttons
+    document.getElementById('shopNow').addEventListener('click', (e) => { addRipple(e); document.getElementById('menu').scrollIntoView({ behavior: 'smooth' }); });
+    document.getElementById('scrollToInfo').addEventListener('click', (e) => { addRipple(e); document.getElementById('info').scrollIntoView({ behavior: 'smooth' }); });
+    document.getElementById('startOrderBtn').addEventListener('click', (e) => { addRipple(e); document.getElementById('menu').scrollIntoView({ behavior: 'smooth' }); });
+
+    // --- Checkout Flow ---
+    const overlay = document.getElementById('checkoutOverlay');
+    const nextBtn = document.getElementById('nextBtn');
+    const backBtn = document.getElementById('backBtn');
+    const cancelBtn = document.getElementById('cancelBtn');
+    const checkoutBtn = document.getElementById('checkoutBtn');
+
+    const steps = Array.from(document.querySelectorAll('.step'));
+    const chips = Array.from(document.querySelectorAll('.chip'));
+    let stepIndex = 0;
+
+    function setStep(i) {
+      stepIndex = Math.max(0, Math.min(steps.length - 1, i));
+      steps.forEach((s, idx) => s.classList.toggle('active', idx === stepIndex));
+      chips.forEach((c, idx) => c.classList.toggle('active', idx === stepIndex));
+      backBtn.style.visibility = stepIndex === 0 ? 'hidden' : 'visible';
+      nextBtn.textContent = stepIndex === steps.length - 1 ? 'Place Order' : 'Next';
+      if (stepIndex === 2) buildReview();
+    }
+
+    function openCheckout() { if (!cart.size) { toast('Your cart is empty'); return; } overlay.classList.add('open'); setStep(0); }
+    function closeCheckout() { overlay.classList.remove('open'); }
+
+    checkoutBtn.addEventListener('click', (e) => { addRipple(e); openCheckout(); });
+    cancelBtn.addEventListener('click', (e) => { addRipple(e); closeCheckout(); });
+    overlay.addEventListener('click', (e) => { if (e.target === overlay) closeCheckout(); });
+
+    backBtn.addEventListener('click', (e) => { addRipple(e); setStep(stepIndex - 1) });
+    nextBtn.addEventListener('click', (e) => {
+      addRipple(e);
+      if (stepIndex === 0) {
+        const ok = document.getElementById('shippingForm').reportValidity();
+        if (!ok) return;
+        setStep(1);
+      } else if (stepIndex === 1) {
+        const m = document.getElementById('method').value;
+        if (m !== 'Cash on Delivery') {
+          const ok = document.getElementById('paymentForm').reportValidity();
+          if (!ok) return;
+        }
+        setStep(2);
+      } else {
+        // Place order
+        closeCheckout();
+        toast('Order placed!');
+        burstConfetti();
+        cart.clear(); renderCart();
+      }
+    });
+
+    function buildReview() {
+      const review = document.getElementById('reviewBlock');
+      let html = '';
+      html += '<div style="display:grid; gap:8px">';
+      for (const { product, qty } of cart.values()) {
+        html += `<div class="rowline"><span>${product.name} × ${qty}</span><strong>${formatINR(product.price * qty)}</strong></div>`;
+      }
+      html += `<div class="rowline"><span class="muted">Subtotal</span><span>${subtotalEl.textContent}</span></div>`;
+      html += `<div class="rowline"><span class="muted">Tax</span><span>${taxEl.textContent}</span></div>`;
+      html += `<div class="rowline"><span class="muted">Delivery</span><span>₹30</span></div>`;
+      html += `<div class="rowline" style="border-top:1px dashed rgba(148,163,184,.16); padding-top:8px"><span class="total">Total</span><span class="total">${totalEl.textContent}</span></div>`;
+      html += '</div>';
+      review.innerHTML = html;
+    }
+
+    // --- Confetti ---
+    const c = document.getElementById('confetti');
+    const ctx = c.getContext('2d');
+    function resize() { c.width = innerWidth; c.height = innerHeight }
+    window.addEventListener('resize', resize); resize();
+    let confetti = [];
+    function spawnConfetti(n = 140) {
+      confetti = Array.from({ length: n }, _ => ({
+        x: Math.random() * c.width,
+        y: -20 - Math.random() * c.height * 3,
+        r: 4 + Math.random() * 6,
+        vx: -2 + Math.random() * 4,
+        vy: 2 + Math.random() * 3,
+        a: Math.random() * Math.PI * 2,
+        aa: -0.05 + Math.random() * 2,
+        color: `hsl(${Math.floor(Math.random() * 360)}, 90%, 60%)`
+      }));
+    }
+    let raf;
+    function loop() {
+      ctx.clearRect(0, 0, c.width, c.height);
+      for (const p of confetti) {
+        p.x += p.vx; p.y += p.vy; p.a += p.aa; p.vy += 0.09; // gravity
+        ctx.save();
+        ctx.translate(p.x, p.y); ctx.rotate(p.a);
+        ctx.fillStyle = p.color; ctx.fillRect(-p.r, -p.r, p.r * 2, p.r * 2);
+        ctx.restore();
+      }
+      confetti = confetti.filter(p => p.y < c.height + 20);
+      if (confetti.length) { raf = requestAnimationFrame(loop); }
+      else cancelAnimationFrame(raf);
+    }
+    function burstConfetti() { spawnConfetti(); cancelAnimationFrame(raf); loop(); setTimeout(() => confetti = [], 1200); }
+
+    // Keyboard UX
+    window.addEventListener('keydown', (e) => { if (e.key === 'Escape') { closeCheckout(); drawer.classList.remove('open'); } });
+
+    // Initial totals
+    renderCart();
+  </script>
+</body>
+
+</html>

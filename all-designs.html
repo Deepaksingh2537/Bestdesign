@@ -1,0 +1,1274 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <title>All Best Web Designs</title>
+
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta http-equiv="X-Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'" />
+
+    <!-- Bootstrap CSS (make sure it's included) -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- jQuery (required for Bootstrap dropdown functionality, if you're using it) -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <!-- Popper.js (required for dropdown functionality) -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Css Link -->
+    <link rel="stylesheet" href="style.css" />
+
+    <link rel="stylesheet" href="css/mystyle.css" />
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+</head>
+
+<style>
+    .course-card {
+        border-radius: 12px;
+        overflow: hidden;
+        transition: transform 0.3s, box-shadow 0.3s;
+        background: white;
+    }
+
+    .course-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1) !important;
+    }
+
+    .course-card img {
+        height: 200px;
+        object-fit: cover;
+        transition: transform 0.5s;
+    }
+
+    .course-card:hover img {
+        transform: scale(1.05);
+    }
+
+    .card-title {
+        color: #2c3e50;
+        font-weight: 700;
+        margin-bottom: 15px;
+    }
+
+    .learn-more {
+        color: #ff642e;
+        font-weight: 600;
+        display: inline-block;
+        margin-top: 10px;
+        transition: color 0.3s;
+    }
+
+    .learn-more:hover {
+        color: #2980b9;
+    }
+
+    .course-card .p-3 {
+        border-top: 1px solid #f1f1f1;
+    }
+
+    .industries-label {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        background: #e74c3c;
+        color: white;
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+
+    .container {
+        max-width: 1200px;
+    }
+
+    h2.section-title {
+        text-align: center;
+        margin: 50px 0 40px;
+        color: #2c3e50;
+        font-weight: 700;
+        position: relative;
+    }
+
+    h2.section-title:after {
+        content: '';
+        display: block;
+        width: 80px;
+        height: 4px;
+        background: #3498db;
+        margin: 15px auto;
+        border-radius: 2px;
+    }
+
+    @media (max-width: 768px) {
+        .header-section h1 {
+            font-size: 2rem;
+        }
+
+        .header-section p {
+            font-size: 1rem;
+        }
+    }
+</style>
+
+<body>
+
+    <div class="stars" id="stars">
+        <nav class="navbar navbar-expand-lg py-3 pt-4 shadow-sm section-navbar fixed-top"
+            style="background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);">
+
+            <div class="container">
+                <!-- Logo with animation -->
+                <a class="navbar-brand d-flex align-items-center" href="index.html">
+                    <h2 class="fw-bold">
+
+                        <span class="headings-colors">Deepak Rajput</span>
+                    </h2>
+                </a>
+
+                <!-- Toggle Button with animation icon -->
+                <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas"
+                    data-bs-target="#offcanvasNavbar">
+                    <span class="navbar-toggler-icon">
+                        <div class="animated-toggler"></div>
+                        <div class="animated-toggler"></div>
+                        <div class="animated-toggler"></div>
+                    </span>
+                </button>
+
+                <!-- Offcanvas Sidebar with modern design -->
+                <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar">
+                    <div class="offcanvas-header border-bottom border-secondary">
+                        <h5 class="offcanvas-title text-gradient">Best Designs</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
+                    </div>
+
+                    <div class="offcanvas-body">
+                        <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+
+                            <!-- Our Programs with modern dropdown -->
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle text-white hover-underline" href="#" role="button"
+                                    data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="fas fa-graduation-cap me-1"></i> Our Designs
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-dark animate-pop">
+
+
+                                    <li class="fonts-sizes">
+                                        <a class="dropdown-item hover-slide" href="all-designs.html">
+                                            <i class="fas fa-rocket me-2"></i> All Designs
+                                        </a>
+                                    </li>
+                                    <li class="fonts-sizes">
+                                        <a class="dropdown-item hover-slide" href="3danimation.html">
+                                            <i class="fas fa-cube me-2"></i> 3D Animation
+                                        </a>
+                                    </li>
+                                    <li class="fonts-sizes">
+                                        <a class="dropdown-item hover-slide" href="2danimation.html">
+                                            <i class="fas fa-paint-brush me-2"></i> 2D Animation
+                                        </a>
+                                    </li>
+                                    <li><a class="dropdown-item hover-slide" href="game-art-designing.html"><i
+                                                class="fas fa-gamepad me-2"></i> Game Art Design</a>
+                                    </li>
+
+                                    <li class="fonts-sizes">
+                                        <a class="dropdown-item hover-slide" href="graphic-design.html">
+                                            <i class="fas fa-palette me-2"></i> Graphic Design
+                                        </a>
+                                    </li>
+                                    <li class="fonts-sizes">
+                                        <a class="dropdown-item hover-slide" href="motion-graphics.html">
+                                            <i class="fas fa-film me-2"></i> Motion Graphics
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+
+                            <!-- Admissions Button with animation -->
+                            <li class="nav-item ms-lg-2">
+                                <a href="get-touch.html" class="btn btn-enquiry px-4 py-2 text-white">
+                                    <span class="btn-text">Get in Touch</span>
+                                    <i class="fas fa-arrow-right ms-2 btn-icon"></i>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <div class="section-sliders">
+            <div class="container course-section py-5">
+                <div class="row align-items-center text-start">
+                    <!-- Left Text Content -->
+                    <div class="col-lg-8 mb-4 mb-lg-0">
+
+                        <div class="course-subtitle">All 3D & 2D Animations Designs</div>
+                        <ul class="course-list list-unstyled">
+                            <li>(a). <b>Design Trends</b> – 3D gradients, glassmorphism, and bold typography are
+                                defining the year.</li>
+                            <li>(b). <b>Motion Magic</b> – Micro-animations create smoother user experiences and higher
+                                engagement.</li>
+                            <li>(c). <b>2D Comeback</b> – Hand-drawn, flat-style illustrations are making waves in
+                                branding.</li>
+                            <li>(d). <b>3D Everywhere</b> – Interactive 3D models are now common across modern websites.
+                            </li>
+                            <li>(e). <b>UI Balance</b> – Hybrid looks with 2D icons and 3D shadows bring depth without
+                                clutter.</li>
+                            <li>(f). <b>Speed Hack</b> – Optimize animation files (Lottie, GIFs, MP4) for performance.
+                            </li>
+                            <li>(g). <b>AI Tools</b> – From concept art to storyboards, AI accelerates creative
+                                workflows.</li>
+                            <li>(h). <b>Design Workflow</b> – Figma + Blender pipelines make 2D/3D collaboration
+                                seamless.</li>
+                            <li>(i). <b>Color Flow</b> – Neon gradients and metallic tones dominate modern palettes.
+                            </li>
+                            <li>(j). <b>Future Ready</b> – Real-time rendering is powering smoother animations
+                                everywhere.</li>
+                        </ul>
+
+                    </div>
+
+                    <!-- Right Images Content -->
+                    <div class="col-lg-4 col-md-12 col-sm-6">
+
+                        <div class=" image-grid">
+                            <div class="left-column">
+                                <div class="image-cards">
+                                    <img src="assets/animationImg1.png" alt="Image 1">
+                                </div>
+                            </div>
+
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="container ">
+                <div class="row flex-column-reverse flex-lg-row">
+                    <div class="col-md-12">
+
+                        <h1 class="text-white mb-4 display-5 fw-bold py-5">
+                            Our Designs
+                            <span class="color-text">Programs</span>
+                        </h1>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="container py-5">
+
+                <div class="row g-4" id="course-container">
+
+                    <div class="col-md-4 col-lg-4">
+                        <div class="course-card shadow">
+                            <img src="assets/fly-animation.png" alt="3D Animation" class="card-img-bottom" />
+                            <div class="p-3">
+                                <h5 class="card-title">3D Animation</h5>
+                                <a href="fly-animation.html" target="_blank"
+                                    class="learn-more text-decoration-none">View
+                                    <i class="fas fa-arrow-right ms-1"></i></a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4 col-lg-4">
+                        <div class="course-card shadow">
+                            <img src="assets/star-cursor.png" alt="3D Animation" class="card-img-bottom" />
+                            <div class="p-3">
+                                <h5 class="card-title">Star Cursor</h5>
+                                <a href="star-cursor.html" target="_blank" class="learn-more text-decoration-none">View
+                                    <i class="fas fa-arrow-right ms-1"></i></a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4 col-lg-4">
+                        <div class="course-card shadow">
+                            <img src="assets/car-race.png" alt="3D Animation" class="card-img-bottom" />
+                            <div class="p-3">
+                                <h5 class="card-title">Car Slider</h5>
+                                <a href="car-slider.html" target="_blank" class="learn-more text-decoration-none">View
+                                    <i class="fas fa-arrow-right ms-1"></i></a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4 col-lg-4">
+                        <div class="course-card shadow">
+                            <img src="assets/animated-product.png" alt="3D Animation" class="card-img-bottom" />
+                            <div class="p-3">
+                                <h5 class="card-title">Animated Product Slider</h5>
+                                <a href="animated-product-slider.html" target="_blank"
+                                    class="learn-more text-decoration-none">View
+                                    <i class="fas fa-arrow-right ms-1"></i></a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4 col-lg-4">
+                        <div class="course-card shadow">
+                            <img src="assets/magic-slider.png" alt="3D Animation" class="card-img-bottom" />
+                            <div class="p-3">
+                                <h5 class="card-title">Magic Slider</h5>
+                                <a href="magic-sliders.html" target="_blank"
+                                    class="learn-more text-decoration-none">View
+                                    <i class="fas fa-arrow-right ms-1"></i></a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4 col-lg-4">
+                        <div class="course-card shadow">
+                            <img src="assets/slider-animation.png" alt="3D Animation" class="card-img-bottom" />
+                            <div class="p-3">
+                                <h5 class="card-title">GSAP Slider</h5>
+                                <a href="gsap-slider.html" target="_blank" class="learn-more text-decoration-none">View
+                                    <i class="fas fa-arrow-right ms-1"></i></a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4 col-lg-4">
+                        <div class="course-card shadow">
+                            <img src="assets/scroll-driven.png" alt="3D Animation" class="card-img-bottom" />
+                            <div class="p-3">
+                                <h5 class="card-title">Scroll Driven Cards</h5>
+                                <a href="scroll-driven-card.html" target="_blank"
+                                    class="learn-more text-decoration-none">View
+                                    <i class="fas fa-arrow-right ms-1"></i></a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4 col-lg-4">
+                        <div class="course-card shadow">
+                            <img src="assets/swipe-gallery.png" alt="3D Animation" class="card-img-bottom" />
+                            <div class="p-3">
+                                <h5 class="card-title">Circle Swipe Gallery</h5>
+                                <a href="circle-swipper-gallery.html" target="_blank"
+                                    class="learn-more text-decoration-none">View
+                                    <i class="fas fa-arrow-right ms-1"></i></a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4 col-lg-4">
+                        <div class="course-card shadow">
+                            <img src="assets/gallery-team.jpg" alt="3D Animation" class="card-img-bottom" />
+                            <div class="p-3">
+                                <h5 class="card-title"> Swiper Gallery Slider </h5>
+                                <a href="coverflow-team.html" target="_blank"
+                                    class="learn-more text-decoration-none">View
+                                    <i class="fas fa-arrow-right ms-1"></i></a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4 col-lg-4">
+                        <div class="course-card shadow">
+                            <img src="assets/cube-effect.png" alt="3D Animation" class="card-img-bottom" />
+                            <div class="p-3">
+                                <h5 class="card-title">3D Cube Gallery</h5>
+                                <a href="cube-effect.html" target="_blank" class="learn-more text-decoration-none">View
+                                    <i class="fas fa-arrow-right ms-1"></i></a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4 col-lg-4">
+                        <div class="course-card shadow">
+                            <img src="assets/circular-swipe.png" alt="3D Animation" class="card-img-bottom" />
+                            <div class="p-3">
+                                <h5 class="card-title">Circular Swiper‑Gallery</h5>
+                                <a href="circular-swipe.html" target="_blank"
+                                    class="learn-more text-decoration-none">View
+                                    <i class="fas fa-arrow-right ms-1"></i></a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 3D Animation Card -->
+                    <div class="col-md-4 col-lg-4">
+                        <div class="course-card shadow">
+                            <img src="assets/animtion.png" alt="2D Animation" class="card-img-bottom" />
+                            <div class="p-3">
+                                <h5 class="card-title">Mouse Hover Effect Animation </h5>
+                                <a href="love-animation.html" target="_blank"
+                                    class="learn-more text-decoration-none">View<i
+                                        class="fas fa-arrow-right ms-1"></i></a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4 col-lg-4">
+                        <div class="course-card shadow">
+                            <img src="image/coverflowf.jpg" alt="2D Animation" class="card-img-bottom" />
+                            <div class="p-3">
+                                <h5 class="card-title">Coverflow Effect </h5>
+                                <a href="coverflow-effect.html" target="_blank"
+                                    class="learn-more text-decoration-none">View<i
+                                        class="fas fa-arrow-right ms-1"></i></a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4 col-lg-4">
+                        <div class="course-card shadow">
+                            <img src="image/coverflow-css.jpg" alt="2D Animation" class="card-img-bottom" />
+                            <div class="p-3">
+                                <h5 class="card-title">3D Coverflow </h5>
+                                <a href="3D-coverflow.html" target="_blank"
+                                    class="learn-more text-decoration-none">View<i
+                                        class="fas fa-arrow-right ms-1"></i></a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4 col-lg-4">
+                        <div class="course-card shadow">
+                            <img src="image/cycle-product.png" alt="2D Animation" class="card-img-bottom" />
+                            <div class="p-3">
+                                <h5 class="card-title"> Cycle Animation </h5>
+                                <a href="cycle-product.html" target="_blank"
+                                    class="learn-more text-decoration-none">View<i
+                                        class="fas fa-arrow-right ms-1"></i></a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4 col-lg-4">
+                        <div class="course-card shadow">
+                            <img src="image/GSAP Animation.png" alt="Price-Range" class="card-img-bottom" />
+                            <div class="p-3">
+                                <h5 class="card-title">Game Art GSAP Animation </h5>
+                                <a href="gsap-animation.html" target="_blank"
+                                    class="learn-more text-decoration-none">View
+                                    <i class="fas fa-arrow-right ms-1"></i></a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4 col-lg-4">
+                        <div class="course-card shadow">
+                            <img src="image/3D-Card-Slider.jpg" alt="Price-Range" class="card-img-bottom" />
+                            <div class="p-3">
+                                <h5 class="card-title"> 3D Card Slider </h5>
+                                <a href="3d-card-slider.html" target="_blank"
+                                    class="learn-more text-decoration-none">View
+                                    <i class="fas fa-arrow-right ms-1"></i></a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4 col-lg-4">
+                        <div class="course-card shadow">
+                            <img src="image/carousel-dark.jpg" alt="Price-Range" class="card-img-bottom" />
+                            <div class="p-3">
+                                <h5 class="card-title"> Magic Slider + Parallax </h5>
+                                <a href="magic-slider-animated.html" target="_blank"
+                                    class="learn-more text-decoration-none">View
+                                    <i class="fas fa-arrow-right ms-1"></i></a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4 col-lg-4">
+                        <div class="course-card shadow">
+                            <img src="image/Magic Slider.png" alt="Price-Range" class="card-img-bottom" />
+                            <div class="p-3">
+                                <h5 class="card-title"> Magic Slider </h5>
+                                <a href="magic-slider.html" target="_blank" class="learn-more text-decoration-none">View
+                                    <i class="fas fa-arrow-right ms-1"></i></a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4 col-lg-4">
+                        <div class="course-card shadow">
+                            <img src="assets/error.png" alt="3D Card Hover" class="card-img-bottom" />
+                            <div class="p-3">
+                                <h5 class="card-title"> Error Page </h5>
+                                <a href="error.html" target="_blank" class="learn-more text-decoration-none">View
+                                    <i class="fas fa-arrow-right ms-1"></i></a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4 col-lg-4">
+                        <div class="course-card shadow">
+                            <img src="image/rotating-image-gallery.jpg" alt=" Rotating Gallery"
+                                class="card-img-bottom" />
+                            <div class="p-3">
+                                <h5 class="card-title"> Rotating Gallery </h5>
+                                <a href="rotating-image-gallery.html" target="_blank"
+                                    class="learn-more text-decoration-none">View
+                                    <i class="fas fa-arrow-right ms-1"></i></a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4 col-lg-4">
+                        <div class="course-card shadow">
+                            <img src="image/landing-page.gif" alt="Animation Landing Pag" class="card-img-bottom" />
+                            <div class="p-3">
+                                <h5 class="card-title"> Animation Landing Page </h5>
+                                <a href="landing-page.html" target="_blank" class="learn-more text-decoration-none">View
+                                    <i class="fas fa-arrow-right ms-1"></i></a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4 col-lg-4">
+                        <div class="course-card shadow">
+                            <img src="assets/game-art.png" alt="Game Art Design" class="card-img-bottom" />
+                            <div class="p-3">
+                                <h5 class="card-title"> Game Art Design </h5>
+                                <a href="game-art-design.html" target="_blank"
+                                    class="learn-more text-decoration-none">View
+                                    <i class="fas fa-arrow-right ms-1"></i></a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4 col-lg-4">
+                        <div class="course-card shadow">
+                            <img src="image/MWLeEEr-800.jpg" alt="Price-Range" class="card-img-bottom" />
+                            <div class="p-3">
+                                <h5 class="card-title">Flex Card Hover Slider</h5>
+                                <a href="flex-card-hover-slider.html" target="_blank"
+                                    class="learn-more text-decoration-none">View
+                                    <i class="fas fa-arrow-right ms-1"></i></a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4 col-lg-4">
+                        <div class="course-card shadow">
+                            <img src="assets/baby-toys.png" alt="Glowing Card " class="card-img-bottom" />
+                            <div class="p-3">
+                                <h5 class="card-title">Baby Toys Animations </h5>
+                                <a href="baby-toys.html" target="_blank" class="learn-more text-decoration-none">View<i
+                                        class="fas fa-arrow-right ms-1"></i></a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4 col-lg-4">
+                        <div class="course-card shadow">
+                            <img src="assets/3d-image-gallery.png" alt="3D Card Hover" class="card-img-bottom" />
+                            <div class="p-3">
+                                <h5 class="card-title"> 3D Image Gallery </h5>
+                                <a href="3d-image-gallery.html" target="_blank"
+                                    class="learn-more text-decoration-none">View
+                                    <i class="fas fa-arrow-right ms-1"></i></a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4 col-lg-4">
+                        <div class="course-card shadow">
+                            <img src="image/3D Card Hover.jpg" alt="3D Card Hover" class="card-img-bottom" />
+                            <div class="p-3">
+                                <h5 class="card-title"> 3D Card Hover </h5>
+                                <a href="3d-cardhover.html" target="_blank" class="learn-more text-decoration-none">View
+                                    <i class="fas fa-arrow-right ms-1"></i></a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4 col-lg-4">
+                        <div class="course-card shadow">
+                            <img src="image/login-water.png" alt=" Login Form" class="card-img-bottom" />
+                            <div class="p-3">
+                                <h5 class="card-title"> Login Form </h5>
+                                <a href="login-water.html" target="_blank" class="learn-more text-decoration-none">View
+                                    <i class="fas fa-arrow-right ms-1"></i></a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4 col-lg-4">
+                        <div class="course-card shadow">
+                            <img src="assets/particles.png" alt=" Login Form" class="card-img-bottom" />
+                            <div class="p-3">
+                                <h5 class="card-title"> Particle Network Single colors </h5>
+                                <a href="paricles-code.html" target="_blank"
+                                    class="learn-more text-decoration-none">View
+                                    <i class="fas fa-arrow-right ms-1"></i></a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4 col-lg-4">
+                        <div class="course-card shadow">
+                            <img src="assets/particles-color.png" alt=" Login Form" class="card-img-bottom" />
+                            <div class="p-3">
+                                <h5 class="card-title"> Particle Rainbow Nodes Edition </h5>
+                                <a href="particles-net-color.html" target="_blank"
+                                    class="learn-more text-decoration-none">View
+                                    <i class="fas fa-arrow-right ms-1"></i></a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4 col-lg-4">
+                        <div class="course-card shadow">
+                            <img src="image/Particles Cursor Source Code.jpg" alt=" Login Form"
+                                class="card-img-bottom" />
+                            <div class="p-3">
+                                <h5 class="card-title"> Particles Cursor Multiple colors </h5>
+                                <a href="particles-cursors.html" target="_blank"
+                                    class="learn-more text-decoration-none">View
+                                    <i class="fas fa-arrow-right ms-1"></i></a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4 col-lg-4">
+                        <div class="course-card shadow">
+                            <img src="image/Particles Cursor Source Code.jpg" alt=" Login Form"
+                                class="card-img-bottom" />
+                            <div class="p-3">
+                                <h5 class="card-title"> Particles Cursor Single Color </h5>
+                                <a href="particles-cursor.html" target="_blank"
+                                    class="learn-more text-decoration-none">View
+                                    <i class="fas fa-arrow-right ms-1"></i></a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4 col-lg-4">
+                        <div class="course-card shadow">
+                            <img src="image/Collapse-Gallery.jpg" alt="Image Gallery" class="card-img-bottom" />
+                            <div class="p-3">
+                                <h5 class="card-title"> Image Gallery </h5>
+                                <a href="image-gallery.html" target="_blank"
+                                    class="learn-more text-decoration-none">View
+                                    <i class="fas fa-arrow-right ms-1"></i></a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4 col-lg-4">
+                        <div class="course-card shadow">
+                            <img src="image/Travel carousel.jpg" alt="Travel carousel " class="card-img-bottom" />
+                            <div class="p-3">
+                                <h5 class="card-title"> 3D Animation carousel </h5>
+                                <a href="travel-carousel.html" target="_blank"
+                                    class="learn-more text-decoration-none">View
+                                    <i class="fas fa-arrow-right ms-1"></i></a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4 col-lg-4">
+                        <div class="course-card shadow">
+                            <img src="image/Wood Product.jpg" alt="Wood Product" class="card-img-bottom" />
+                            <div class="p-3">
+                                <h5 class="card-title"> Wood Animated Product </h5>
+                                <a href="product-page.html" target="_blank" class="learn-more text-decoration-none">View
+                                    <i class="fas fa-arrow-right ms-1"></i></a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4 col-lg-4">
+                        <div class="course-card shadow">
+                            <img src="image/Flex Card Slider.jpg" alt="Price-Range" class="card-img-bottom" />
+                            <div class="p-3">
+                                <h5 class="card-title">Flex Card Slider</h5>
+                                <a href="flex-card-slider.html" target="_blank"
+                                    class="learn-more text-decoration-none">View
+                                    <i class="fas fa-arrow-right ms-1"></i></a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Animation Design Card -->
+                    <div class="col-md-4 col-lg-4">
+                        <div class="course-card shadow">
+                            <img src="image/animation-1.jfif" alt="Graphic Design" class="card-img-bottom" />
+                            <div class="p-3">
+                                <h5 class="card-title">Animation Page </h5>
+                                <a href="animation-Landing-Page.html" target="_blank"
+                                    class="learn-more text-decoration-none">View
+                                    <i class="fas fa-arrow-right ms-1"></i></a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4 col-lg-4">
+                        <div class="course-card shadow">
+                            <img src="image/cover.jpg" alt="Graphic Design" class="card-img-bottom" />
+                            <div class="p-3">
+                                <h5 class="card-title">Animated Order Page</h5>
+                                <a href="animated-order-page.html" target="_blank"
+                                    class="learn-more text-decoration-none">View
+                                    <i class="fas fa-arrow-right ms-1"></i></a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Motion Graphics Card -->
+                    <div class="col-md-4 col-lg-4">
+                        <div class="course-card shadow">
+                            <img src="image/bikes-gallery.jpg" alt="Motion Graphics" class="card-img-bottom" />
+                            <div class="p-3">
+                                <h5 class="card-title">Bikes Gallery</h5>
+                                <a href="bikes-Image-Gallery.html" target="_blank"
+                                    class="learn-more text-decoration-none">View<i
+                                        class="fas fa-arrow-right ms-1"></i></a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Order Animated  Card -->
+                    <div class="col-md-4 col-lg-4">
+                        <div class="course-card shadow">
+                            <img src="image/order-now.jpg" alt="Order Animated" class="card-img-bottom" />
+                            <div class="p-3">
+                                <h5 class="card-title">Order Animated </h5>
+                                <a href="order-book.html" target="_blank" class="learn-more text-decoration-none">View<i
+                                        class="fas fa-arrow-right ms-1"></i></a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Firefly Button  Card -->
+                    <div class="col-md-4 col-lg-4">
+                        <div class="course-card shadow">
+                            <img src="image/firefly-button.png" alt="Firefly Button " class="card-img-bottom" />
+                            <div class="p-3">
+                                <h5 class="card-title">Firefly Button </h5>
+                                <a href="firefly-Button.html" target="_blank"
+                                    class="learn-more text-decoration-none">View<i
+                                        class="fas fa-arrow-right ms-1"></i></a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4 col-lg-4">
+                        <div class="course-card shadow">
+                            <img src="assets/product-card.png" alt="3D Animation" class="card-img-bottom" />
+                            <div class="p-3">
+                                <h5 class="card-title">Product Card</h5>
+                                <a href="Product-Card.html" target="_blank" class="learn-more text-decoration-none">View
+                                    <i class="fas fa-arrow-right ms-1"></i></a>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <!-- Glowing Card  Card -->
+                    <div class="col-md-4 col-lg-4">
+                        <div class="course-card shadow">
+                            <img src="image/glowing-card.webp" alt="Glowing Card " class="card-img-bottom" />
+                            <div class="p-3">
+                                <h5 class="card-title">Glowing Card </h5>
+                                <a href="Glowing-card.html" target="_blank"
+                                    class="learn-more text-decoration-none">View<i
+                                        class="fas fa-arrow-right ms-1"></i></a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card Reveal Animation Card -->
+                    <div class="col-md-4 col-lg-4">
+                        <div class="course-card shadow">
+                            <img src="image/card-reveal-animation.webp" alt="Card Reveal Animation"
+                                class="card-img-bottom" />
+                            <div class="p-3">
+                                <h5 class="card-title">Card Reveal Animation</h5>
+                                <a href="Card-Reveal-Animation.html" target="_blank"
+                                    class="learn-more text-decoration-none">View
+                                    <i class="fas fa-arrow-right ms-1"></i></a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Price-Range Card -->
+                    <div class="col-md-4 col-lg-4">
+                        <div class="course-card shadow">
+                            <img src="assets/price.png" alt="Price-Range" class="card-img-bottom" />
+                            <div class="p-3">
+                                <h5 class="card-title">Animation Price-Range</h5>
+                                <a href="animated-price-range.html" target="_blank"
+                                    class="learn-more text-decoration-none">View
+                                    <i class="fas fa-arrow-right ms-1"></i></a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Price-Range Card -->
+                    <div class="col-md-4 col-lg-4">
+                        <div class="course-card shadow">
+                            <img src="image/price-range.webp" alt="Price-Range" class="card-img-bottom" />
+                            <div class="p-3">
+                                <h5 class="card-title">Price-Range Animation</h5>
+                                <a href="responsive-price-range.html" target="_blank"
+                                    class="learn-more text-decoration-none">View
+                                    <i class="fas fa-arrow-right ms-1"></i></a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Button Animation Card -->
+                    <div class="col-md-4 col-lg-4">
+                        <div class="course-card shadow">
+                            <img src="image/img-1.jpg" alt="Button Animation" class="card-img-bottom" />
+                            <div class="p-3">
+                                <h5 class="card-title">Button Animation</h5>
+                                <a href="button-animation.html" target="_blank"
+                                    class="learn-more text-decoration-none">View
+                                    <i class="fas fa-arrow-right ms-1"></i></a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4 col-lg-4">
+                        <div class="course-card shadow">
+                            <img src="image/cyber-toast.png" alt="Price-Range" class="card-img-bottom" />
+                            <div class="p-3">
+                                <h5 class="card-title">Cyber Toast </h5>
+                                <a href="cyber-toast.html" target="_blank" class="learn-more text-decoration-none">View
+                                    <i class="fas fa-arrow-right ms-1"></i></a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4 col-lg-4">
+                        <div class="course-card shadow">
+                            <img src="image/Inverted-Scroll.jpg" alt="Price-Range" class="card-img-bottom" />
+                            <div class="p-3">
+                                <h5 class="card-title"> Inverted Scroll </h5>
+                                <a href="inverted-scroll.html" target="_blank"
+                                    class="learn-more text-decoration-none">View
+                                    <i class="fas fa-arrow-right ms-1"></i></a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4 col-lg-4">
+                        <div class="course-card shadow">
+                            <img src="image/Slider-Form.gif" alt="Price-Range" class="card-img-bottom" />
+                            <div class="p-3">
+                                <h5 class="card-title"> Slider Form </h5>
+                                <a href="slider-sign-form.html" target="_blank"
+                                    class="learn-more text-decoration-none">View
+                                    <i class="fas fa-arrow-right ms-1"></i></a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4 col-lg-4">
+                        <div class="course-card shadow">
+                            <img src="image/Emoji Loader.gif" alt="Price-Range" class="card-img-bottom" />
+                            <div class="p-3">
+                                <h5 class="card-title"> Emoji Loader </h5>
+                                <a href="emoji-loader.html" target="_blank" class="learn-more text-decoration-none">View
+                                    <i class="fas fa-arrow-right ms-1"></i></a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4 col-lg-4">
+                        <div class="course-card shadow">
+                            <img src="image/Futuristic-3d-Hover.gif" alt="Price-Range" class="card-img-bottom" />
+                            <div class="p-3">
+                                <h5 class="card-title">Futuristic-3d-Hover </h5>
+                                <a href="hover-me.html" target="_blank" class="learn-more text-decoration-none">View
+                                    <i class="fas fa-arrow-right ms-1"></i></a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4 col-lg-4">
+                        <div class="course-card shadow">
+                            <img src="image/login-form.png" alt="Price-Range" class="card-img-bottom" />
+                            <div class="p-3">
+                                <h5 class="card-title"> Login Animation </h5>
+                                <a href="hacker-login.html" target="_blank" class="learn-more text-decoration-none">View
+                                    <i class="fas fa-arrow-right ms-1"></i></a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4 col-lg-4">
+                        <div class="course-card shadow">
+                            <img src="image/hexagon.jpg" alt="Price-Range" class="card-img-bottom" />
+                            <div class="p-3">
+                                <h5 class="card-title"> Hexagons </h5>
+                                <a href="hexagon.html" target="_blank" class="learn-more text-decoration-none">View
+                                    <i class="fas fa-arrow-right ms-1"></i></a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4 col-lg-4">
+                        <div class="course-card shadow">
+                            <img src="image/Hover Card.png" alt="Price-Range" class="card-img-bottom" />
+                            <div class="p-3">
+                                <h5 class="card-title"> Hover Card </h5>
+                                <a href="hover-card.html" target="_blank" class="learn-more text-decoration-none">View
+                                    <i class="fas fa-arrow-right ms-1"></i></a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4 col-lg-4">
+                        <div class="course-card shadow">
+                            <img src="image/Log-in-rotate.jpg" alt="Price-Range" class="card-img-bottom" />
+                            <div class="p-3">
+                                <h5 class="card-title">Log-in Form Rotate </h5>
+                                <a href="login.html" target="_blank" class="learn-more text-decoration-none">View
+                                    <i class="fas fa-arrow-right ms-1"></i></a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4 col-lg-4">
+                        <div class="course-card shadow">
+                            <img src="image/Hover Card-responsive.gif" alt="Wood Product" class="card-img-bottom" />
+                            <div class="p-3">
+                                <h5 class="card-title"> Hover Card Responsive </h5>
+                                <a href="responsive-card.html" target="_blank"
+                                    class="learn-more text-decoration-none">View
+                                    <i class="fas fa-arrow-right ms-1"></i></a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4 col-lg-4">
+                        <div class="course-card shadow">
+                            <img src="image/swipper-select.png" alt="Slide Product Card" class="card-img-bottom" />
+                            <div class="p-3">
+                                <h5 class="card-title">Swipper Gallery </h5>
+                                <a href="swiper-gallery.html" target="_blank"
+                                    class="learn-more text-decoration-none">View
+                                    <i class="fas fa-arrow-right ms-1"></i></a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4 col-lg-4">
+                        <div class="course-card shadow">
+                            <img src="image/slide-product.jpg" alt="Slide Product Card" class="card-img-bottom" />
+                            <div class="p-3">
+                                <h5 class="card-title"> Slide Product Card </h5>
+                                <a href="slide-product.html" target="_blank"
+                                    class="learn-more text-decoration-none">View
+                                    <i class="fas fa-arrow-right ms-1"></i></a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4 col-lg-4">
+                        <div class="course-card shadow">
+                            <img src="image/Smoke Effects.jpg" alt="Smoke Effects" class="card-img-bottom" />
+                            <div class="p-3">
+                                <h5 class="card-title"> Smoke Effects </h5>
+                                <a href="smoke.html" target="_blank" class="learn-more text-decoration-none">View
+                                    <i class="fas fa-arrow-right ms-1"></i></a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4 col-lg-4">
+                        <div class="course-card shadow">
+                            <img src="image/table-flipping.png" alt="Table Flipping" class="card-img-bottom" />
+                            <div class="p-3">
+                                <h5 class="card-title"> Table Flipping </h5>
+                                <a href="table-flipping.html" target="_blank"
+                                    class="learn-more text-decoration-none">View
+                                    <i class="fas fa-arrow-right ms-1"></i></a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4 col-lg-4">
+                        <div class="course-card shadow">
+                            <img src="image/travel-pricing.png" alt=" Travel Image Rotate " class="card-img-bottom" />
+                            <div class="p-3">
+                                <h5 class="card-title"> Travel Image Rotate </h5>
+                                <a href="travel-pricing.html" target="_blank"
+                                    class="learn-more text-decoration-none">View
+                                    <i class="fas fa-arrow-right ms-1"></i></a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4 col-lg-4">
+                        <div class="course-card shadow">
+                            <img src="image/swipper.jfif" alt="Travel carousel " class="card-img-bottom" />
+                            <div class="p-3">
+                                <h5 class="card-title"> 3D carousel </h5>
+                                <a href="travel-carousal-design.html" target="_blank"
+                                    class="learn-more text-decoration-none">View
+                                    <i class="fas fa-arrow-right ms-1"></i></a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4 col-lg-4">
+                        <div class="course-card shadow">
+                            <img src="image/animated-image.png" alt="Animated Images" class="card-img-bottom" />
+                            <div class="p-3">
+                                <h5 class="card-title"> Animated Images </h5>
+                                <a href="animated-image.html" target="_blank"
+                                    class="learn-more text-decoration-none">View
+                                    <i class="fas fa-arrow-right ms-1"></i></a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4 col-lg-4">
+                        <div class="course-card shadow">
+                            <img src="image/Animated log-in.jpg" alt="2D Login Form" class="card-img-bottom" />
+                            <div class="p-3">
+                                <h5 class="card-title"> 2D Login Form </h5>
+                                <a href="2d-login.html" target="_blank" class="learn-more text-decoration-none">View
+                                    <i class="fas fa-arrow-right ms-1"></i></a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4 col-lg-4">
+                        <div class="course-card shadow">
+                            <img src="image/circle-swap-photo-gallery.webp" alt="Circle swiper-gallery"
+                                class="card-img-bottom" />
+                            <div class="p-3">
+                                <h5 class="card-title"> Circle swiper-gallery </h5>
+                                <a href="circle-swap.html" target="_blank" class="learn-more text-decoration-none">View
+                                    <i class="fas fa-arrow-right ms-1"></i></a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4 col-lg-4">
+                        <div class="course-card shadow">
+                            <img src="image/collapse-gallery.png" alt=" Collapse Gallery" class="card-img-bottom" />
+                            <div class="p-3">
+                                <h5 class="card-title"> Collapse Gallery </h5>
+                                <a href="collapse-gallery.html" target="_blank"
+                                    class="learn-more text-decoration-none">View
+                                    <i class="fas fa-arrow-right ms-1"></i></a>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        </div>
+
+        <!-- scroll-top -->
+        <div class="scroll-top" onclick="window.scrollTo({ top: 0, behavior: 'smooth' });">
+            ↑
+        </div>
+
+
+        <footer class="footer">
+            <div class="container">
+
+                <!-- Navigation Links Section -->
+                <div class="row pt-3">
+                    <!-- Student Zone -->
+                    <div class="col-md-3 col-sm-6 mb-4">
+                        <h5>Website Design </h5>
+                        <ul class="list-unstyled text-justify">
+                            <li>Modern website design merges 3D, 2D animation, Game Art Designs and graphic design for
+                                engaging user
+                                experiences. 3D adds depth, 2D drives storytelling, and graphic design enhances branding
+                                with bold
+                                typography and clean layouts—creating dynamic, interactive, and visually impactful
+                                websites.
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- Our Programs -->
+                    <div class="col-md-3 col-sm-6 mb-4">
+                        <h5>Our Programs</h5>
+                        <ul class="list-unstyled">
+                            <li><a href="all-designs.html">All Designs</a></li>
+                            <li><a href="3danimation.html">3D Animation</a></li>
+                            <li><a href="2danimation.html">2D Animation</a></li>
+                            <li><a href="graphic-design.html">Graphic Design</a></li>
+                            <li><a href="motion-graphics.html">Motion Graphics</a></li>
+                            <li><a href="game-art-designing.html">Game Art Design</a></li>
+                        </ul>
+                    </div>
+
+
+                    <!-- Careers & Contact -->
+                    <div class="col-md-3 col-sm-6 mb-4">
+                        <h5>Contact</h5>
+                        <ul class="list-unstyled">
+                            <li class="mt-3">
+                                <!-- <h6>Contact Us</h6> -->
+                                <div style="opacity: 0.8;">
+                                    <p class="mb-1">
+                                        <i class="fa-solid fa-phone me-2"></i>
+                                        <a class="align-items-center text-white text-decoration-none"
+                                            href="tel:+919050450019">
+                                            +91 9050450019
+                                        </a>
+                                    </p>
+                                    <p class="mb-1">
+                                        <i class="fa-solid fa-envelope me-2"></i>
+                                        <a class="text-white text-decoration-none"
+                                            href="mailto:business@deepakrajput.com">
+                                            business@deepakrajput.com
+                                        </a>
+                                    </p>
+                                </div>
+
+                            </li>
+                        </ul>
+                        <h6>Follow Us</h6>
+                        <div class="social-icons">
+                            <a href="https://www.facebook.com/people/Neebha-Web-Services-Private-Limited/61573324153099/"
+                                class="text-white mx-2" target="_blank"><i class="fab fa-facebook-f"></i></a>
+                            <!-- <a href="https://www.pinterest.com/zicazimaludhiana/" class="text-white mx-2" target="_blank"><i
+                          class="fab fa-pinterest"></i></a> -->
+                            <a href="https://www.instagram.com/neebhawebservices/" class="text-white mx-2"
+                                target="_blank"><i class="fab fa-instagram"></i></a>
+                            <a href="https://www.linkedin.com/onboarding/start/profile-location/new/?session_redirect=https%3A%2F%2Fin.linkedin.com%2Fcompany%2Fneebha-web-services-private-limited&source=coreg"
+                                target="_blank" class="text-white mx-2"><i class="fab fa-linkedin-in"></i></a>
+                            <!-- <a href="https://www.youtube.com/@ZICAZIMA" class="text-white mx-2" target="_blank"><i
+                          class="fab fa-youtube"></i></a> -->
+                        </div>
+                    </div>
+
+                    <div class="col-md-3 col-sm-6 mb-4 newsletter">
+                        <h5>Newsletter</h5>
+                        <p class="mb-1">Subscribe our newsletter:</p>
+                        <input type="email" required="" name="entry.1776637829" class="footer-form-control"
+                            id="entry.1776637829" placeholder="Enter Your Email">
+                        <a href="index.html" class="btn btn-enquiry px-4 py-2 text-white">
+                            <span class="btn-text">Subscribe Now</span>
+                            <i class="fas fa-arrow-right ms-2 btn-icon"></i>
+                        </a>
+                    </div>
+                </div>
+
+
+                <!-- Resources & Copyright Section -->
+                <div class="row mt-4">
+                    <div class="col-lg-12">
+                        <div class="d-flex flex-wrap justify-content-center  align-items-center">
+                            <div class="copyright text-center text-md-left">
+                                © 2025 All rights reserved.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </footer>
+
+    </div>
+
+    <!-- Script Add -->
+    <script src="./main.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+
+    <script>
+        jQuery('#hiddendIframe').on('load', function () {
+            Swal.fire({
+                title: 'Success!',
+                text: 'Form submitted successfully.',
+                icon: 'success',
+                confirmButtonText: 'OK'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    location.reload(); // Refresh the page
+                }
+            });
+        });
+    </script>
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const banner = document.getElementById('banner');
+
+            // Function to create stars
+            function createStars() {
+                // Create stars
+                for (let i = 0; i < 200; i++) {
+                    const star = document.createElement('div');
+                    star.classList.add('star');
+
+                    // Random properties for each star
+                    const size = Math.random() * 4;
+                    const posX = Math.random() * 100;
+                    const posY = Math.random() * 100;
+                    const duration = 1 + Math.random() * 5;
+                    const delay = Math.random() * 5;
+
+                    // Apply properties to star
+                    star.style.width = `${size}px`;
+                    star.style.height = `${size}px`;
+                    star.style.left = `${posX}%`;
+                    star.style.top = `${posY}%`;
+                    star.style.animationDuration = `${duration}s`;
+                    star.style.animationDelay = `${delay}s`;
+
+                    banner.appendChild(star);
+                }
+
+            }
+
+            // Initial creation
+            createStars();
+
+            // Adjust on window resize
+            window.addEventListener('resize', function () {
+                // Clear existing elements
+                const elements = document.querySelectorAll('.star, .bubble');
+                elements.forEach(el => el.remove());
+
+                // Recreate
+                createStars();
+            });
+        });
+    </script>
+
+    <script>
+        const btn = document.getElementById("scrollBtn");
+        const target = document.getElementById("target");
+
+        btn.addEventListener("click", () => {
+            btn.classList.toggle("active"); // rotate arrow
+            target.scrollIntoView({ behavior: "smooth" }); // smooth scroll
+        });
+
+
+    </script>
+    <script src="./config.js"></script>
+    <script src="./js/main.js"></script>
+
+</body>
+
+</html>

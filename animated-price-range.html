@@ -1,0 +1,548 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Animated Price Range Slider</title>
+
+  <!-- Script Add -->
+  <script src="./main.js"></script>
+
+  <style>
+    :root {
+      --bg-1: #0b1220;
+      --bg-2: #121a2b;
+      --card: rgba(255, 255, 255, .06);
+      --border: rgba(255, 255, 255, .12);
+      --text: #e8eefc;
+      --muted: #b7c2e6;
+      --accent: #7c3aed;
+      /* violet */
+      --accent-2: #22d3ee;
+      /* cyan */
+      --glow: rgba(124, 58, 237, .45);
+      --success: #34d399;
+    }
+
+    * {
+      box-sizing: border-box
+    }
+
+    html,
+    body {
+      height: 100%
+    }
+
+    body {
+      margin: 0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Noto Sans, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+      color: var(--text);
+      background: radial-gradient(1200px 1200px at -10% -10%, #1a2550 0%, transparent 50%),
+        radial-gradient(1000px 1000px at 110% 110%, #083344 0%, transparent 55%),
+        linear-gradient(135deg, var(--bg-1), var(--bg-2));
+      min-height: 100%;
+      display: grid;
+      place-items: center;
+      padding: 28px;
+    }
+
+    .card {
+      width: min(920px, 92vw);
+      background: linear-gradient(180deg, rgba(255, 255, 255, .08), transparent 120%), var(--card);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, .45), 0 0 0 1px rgba(255, 255, 255, .04) inset;
+      backdrop-filter: blur(14px) saturate(120%);
+      -webkit-backdrop-filter: blur(14px) saturate(120%);
+      overflow: hidden;
+    }
+
+    .card .header {
+      padding: 28px 28px 0;
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+      justify-content: space-between;
+      flex-wrap: wrap;
+    }
+
+    .title {
+      font-size: clamp(22px, 3.5vw, 32px);
+      font-weight: 800;
+      letter-spacing: .3px;
+    }
+
+    .subtitle {
+      color: var(--muted);
+      font-size: 14px;
+      max-width: 60ch
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: linear-gradient(180deg, rgba(34, 211, 238, .15), rgba(124, 58, 237, .15));
+      border: 1px solid rgba(124, 58, 237, .35);
+      color: #e6fafe;
+      padding: 8px 12px;
+      border-radius: 999px;
+      font-weight: 700;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: .12em;
+    }
+
+    .content {
+      padding: 22px 28px 28px
+    }
+
+    .values {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      padding: 18px;
+      border: 1px dashed rgba(255, 255, 255, .12);
+      border-radius: 16px;
+      background: rgba(255, 255, 255, .03);
+    }
+
+    .pill {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      border-radius: 14px;
+      background: rgba(255, 255, 255, .05);
+      border: 1px solid rgba(255, 255, 255, .08);
+      box-shadow: 0 10px 24px rgba(0, 0, 0, .25) inset;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .dash {
+      opacity: .5
+    }
+
+    .slider-wrap {
+      margin-top: 26px
+    }
+
+    .slider {
+      --h: 48px;
+      /* slider height */
+      --thumb: 26px;
+      /* thumb size */
+      position: relative;
+      height: var(--h);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Base track */
+    .slider .track {
+      position: absolute;
+      left: 0;
+      right: 0;
+      height: 8px;
+      border-radius: 999px;
+      overflow: hidden;
+      background:
+        linear-gradient(90deg, rgba(255, 255, 255, .08) 0%, rgba(255, 255, 255, .08) 100%),
+        repeating-linear-gradient(90deg, transparent 0 32px, rgba(255, 255, 255, .06) 32px 33px);
+      outline: 1px solid rgba(255, 255, 255, .10);
+      box-shadow: inset 0 1px 1px rgba(255, 255, 255, .15), inset 0 -8px 18px rgba(0, 0, 0, .35);
+    }
+
+    /* Animated selected range */
+    .slider .progress {
+      position: absolute;
+      height: 8px;
+      border-radius: 999px;
+      pointer-events: none;
+      overflow: hidden;
+      left: var(--left, 25%);
+      width: var(--width, 50%);
+      background: linear-gradient(90deg, var(--accent), var(--accent-2));
+      filter: drop-shadow(0 0 10px var(--glow));
+    }
+
+    .slider .progress::before {
+      /* shimmer */
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background: linear-gradient(120deg, rgba(255, 255, 255, .0) 0%, rgba(255, 255, 255, .25) 50%, rgba(255, 255, 255, 0) 100%);
+      transform: translateX(-100%);
+      animation: shimmer 3s infinite;
+    }
+
+    @keyframes shimmer {
+      to {
+        transform: translateX(100%);
+      }
+    }
+
+    /* Range inputs overlayed */
+    input[type="range"] {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: -10px;
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      background: none;
+      outline: none;
+      appearance: none;
+      -webkit-appearance: none;
+      pointer-events: auto;
+    }
+
+    input[type="range"]::-webkit-slider-runnable-track {
+      height: 8px;
+      background: transparent
+    }
+
+    input[type="range"]::-moz-range-track {
+      height: 8px;
+      background: transparent
+    }
+
+    /* Thumb */
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: var(--thumb);
+      height: var(--thumb);
+      border-radius: 999px;
+      cursor: pointer;
+      background: radial-gradient(60% 60% at 30% 30%, #fff 0%, #b4a7ff 35%, #8050ff 70%, #4c1d95 100%);
+      border: 2px solid rgba(255, 255, 255, .9);
+      box-shadow: 0 10px 22px rgba(124, 58, 237, .45), 0 2px 0 rgba(0, 0, 0, .3);
+      transition: transform .15s ease, box-shadow .2s ease;
+    }
+
+    input[type="range"]::-moz-range-thumb {
+      width: var(--thumb);
+      height: var(--thumb);
+      border-radius: 999px;
+      cursor: pointer;
+      border: 2px solid rgba(255, 255, 255, .9);
+      background: radial-gradient(60% 60% at 30% 30%, #fff 0%, #b4a7ff 35%, #8050ff 70%, #4c1d95 100%);
+      box-shadow: 0 10px 22px rgba(124, 58, 237, .45), 0 2px 0 rgba(0, 0, 0, .3);
+      transition: transform .15s ease, box-shadow .2s ease;
+    }
+
+    input[type="range"]:hover::-webkit-slider-thumb {
+      transform: scale(1.06)
+    }
+
+    input[type="range"]:active::-webkit-slider-thumb {
+      transform: scale(1.12)
+    }
+
+    input[type="range"]:hover::-moz-range-thumb {
+      transform: scale(1.06)
+    }
+
+    input[type="range"]:active::-moz-range-thumb {
+      transform: scale(1.12)
+    }
+
+    /* Glow rings under thumbs */
+    .ring {
+      --x: 0%;
+      /* will be set from JS */
+      position: absolute;
+      top: 50%;
+      transform: translate(calc(var(--x) - 50%), -50%);
+      width: 46px;
+      height: 46px;
+      border-radius: 999px;
+      pointer-events: none;
+      background: radial-gradient(circle at 50% 50%, rgba(124, 58, 237, .55), rgba(34, 211, 238, .0) 60%);
+      filter: blur(4px);
+      opacity: .35;
+      transition: transform .2s ease, opacity .2s ease;
+    }
+
+    .slider.dragging .ring {
+      opacity: .6
+    }
+
+    /* Bubbles */
+    .bubble {
+      --x: 0%;
+      --bg: linear-gradient(135deg, rgba(124, 58, 237, .95), rgba(34, 211, 238, .95));
+      position: absolute;
+      top: -56px;
+      transform: translate(calc(var(--x) - 50%), 0) scale(1);
+      padding: 8px 12px;
+      border-radius: 12px;
+      font-weight: 800;
+      font-size: 14px;
+      color: white;
+      background: var(--bg);
+      box-shadow: 0 10px 24px rgba(0, 0, 0, .35), 0 0 0 1px rgba(255, 255, 255, .15) inset;
+      white-space: nowrap;
+      pointer-events: none;
+      will-change: transform;
+      transition: transform .18s cubic-bezier(.21, .98, .6, 1), opacity .18s ease;
+    }
+
+    .bubble::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      bottom: -8px;
+      transform: translateX(-50%);
+      width: 0;
+      height: 0;
+      border-left: 8px solid transparent;
+      border-right: 8px solid transparent;
+      border-top: 8px solid rgba(124, 58, 237, .95);
+      filter: drop-shadow(0 2px 4px rgba(0, 0, 0, .35));
+    }
+
+    .slider.dragging .bubble {
+      transform: translate(calc(var(--x) - 50%), 0) scale(1.05)
+    }
+
+    /* Controls row */
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 18px;
+      justify-content: space-between;
+      align-items: center
+    }
+
+    .btn {
+      appearance: none;
+      border: none;
+      outline: none;
+      cursor: pointer;
+      user-select: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      border-radius: 12px;
+      font-weight: 800;
+      color: #0b1220;
+      background: white;
+      box-shadow: 0 6px 18px rgba(255, 255, 255, .08), 0 2px 0 rgba(0, 0, 0, .25);
+      transition: transform .12s ease, box-shadow .2s ease, background .2s ease;
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
+    }
+
+    .btn:active {
+      transform: translateY(0);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, .25) inset
+    }
+
+    .hint {
+      color: var(--muted);
+      font-size: 12px
+    }
+
+    @media (max-width:560px) {
+      .values {
+        flex-direction: column;
+        align-items: stretch
+      }
+
+      .subtitle {
+        max-width: unset
+      }
+
+      .bubble {
+        font-size: 13px
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <section class="card" role="region" aria-label="Animated price range selector">
+    <div class="header">
+      <div>
+        <div class="chip" aria-hidden="true"> Animated</div>
+        <div class="title">Price Range</div>
+        <div class="subtitle">Use the dual‑thumb slider to choose your minimum and maximum price. Smooth animations,
+          glowing feedback, and live values included.</div>
+      </div>
+      <div class="pill" id="range-readout">₹2,000 <span class="dash">—</span> ₹8,000</div>
+    </div>
+
+    <div class="content">
+      <div class="values" aria-hidden="true">
+        <div class="pill">Min: <span id="min-pill">₹2,000</span></div>
+        <div class="pill">Max: <span id="max-pill">₹8,000</span></div>
+        <div class="pill" title="Gap between min and max">Gap: <span id="gap-pill">₹6,000</span></div>
+      </div>
+
+      <div class="slider-wrap">
+        <div class="slider" id="slider">
+          <div class="track"></div>
+          <div class="progress" id="progress"></div>
+
+          <!-- Glow rings under thumbs -->
+          <div class="ring" id="ring-min" style="--x:25%"></div>
+          <div class="ring" id="ring-max" style="--x:75%"></div>
+
+          <!-- Value bubbles -->
+          <div class="bubble" id="bubble-min" style="--x:25%">₹2,000</div>
+          <div class="bubble" id="bubble-max" style="--x:75%">₹8,000</div>
+
+          <!-- Overlapped range inputs form the dual‑thumb control -->
+          <input id="range-min" aria-label="Minimum price" type="range" min="0" max="100000" value="0" step="100" />
+          <input id="range-max" aria-label="Maximum price" type="range" min="0" max="100000" value="8000" step="100" />
+        </div>
+      </div>
+
+      <div class="controls">
+        <div>
+          <button class="btn" id="demoBtn" aria-pressed="false">▶️ Play demo</button>
+          <button class="btn" id="resetBtn">↺ Reset</button>
+        </div>
+        <div class="hint">Tip: Use your keyboard ← → while focused on a handle for fine control.</div>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    // Utilities
+    const fmt = new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 });
+    const clamp = (n, min, max) => Math.min(Math.max(n, min), max);
+
+    // Elements
+    const slider = document.getElementById('slider');
+    const progress = document.getElementById('progress');
+    const minInput = document.getElementById('range-min');
+    const maxInput = document.getElementById('range-max');
+    const bubbleMin = document.getElementById('bubble-min');
+    const bubbleMax = document.getElementById('bubble-max');
+    const ringMin = document.getElementById('ring-min');
+    const ringMax = document.getElementById('ring-max');
+    const readout = document.getElementById('range-readout');
+    const minPill = document.getElementById('min-pill');
+    const maxPill = document.getElementById('max-pill');
+    const gapPill = document.getElementById('gap-pill');
+    const demoBtn = document.getElementById('demoBtn');
+    const resetBtn = document.getElementById('resetBtn');
+
+    // Config
+    const MIN_GAP = 1000; // minimum gap in ₹ between min and max
+
+    // Internal state for animation
+    let rafId = null;
+    let playing = false;
+    let t = 0; // time accumulator for demo animation
+
+    function toPercent(value, min, max) {
+      return ((value - min) / (max - min)) * 100;
+    }
+
+    function update() {
+      // Ensure the two thumbs obey the min gap
+      const min = +minInput.min, max = +minInput.max;
+      let a = +minInput.value, b = +maxInput.value;
+
+      if (a > b - MIN_GAP) { a = b - MIN_GAP; minInput.value = a; }
+      if (b < a + MIN_GAP) { b = a + MIN_GAP; maxInput.value = b; }
+
+      const p1 = toPercent(a, min, max);
+      const p2 = toPercent(b, min, max);
+
+      // position progress bar
+      progress.style.setProperty('--left', p1 + '%');
+      progress.style.setProperty('--width', Math.max(0, p2 - p1) + '%');
+
+      // bubbles & rings
+      bubbleMin.style.setProperty('--x', p1 + '%');
+      bubbleMax.style.setProperty('--x', p2 + '%');
+      ringMin.style.setProperty('--x', p1 + '%');
+      ringMax.style.setProperty('--x', p2 + '%');
+
+      bubbleMin.textContent = fmt.format(a);
+      bubbleMax.textContent = fmt.format(b);
+      readout.innerHTML = `${fmt.format(a)} <span class="dash">—</span> ${fmt.format(b)}`;
+      minPill.textContent = fmt.format(a);
+      maxPill.textContent = fmt.format(b);
+      gapPill.textContent = fmt.format(b - a);
+
+      // Thumb stacking order (so the active one stays on top when they get close)
+      if (a > max / 2) { minInput.style.zIndex = 6; } else { minInput.style.zIndex = 4; }
+      if (b > max / 2) { maxInput.style.zIndex = 7; } else { maxInput.style.zIndex = 5; }
+    }
+
+    function setDragging(isDragging) {
+      slider.classList.toggle('dragging', isDragging);
+    }
+
+    // Demo animation: smoothly oscillate min & max within bounds
+    function tick() {
+      t += 0.016; // ~60fps
+      const min = +minInput.min, max = +minInput.max;
+      const span = max - min - MIN_GAP;
+      // Use sine waves out of phase for pleasing motion
+      const mid = (min + max) / 2;
+      const amp = span / 2.2;
+      const a = Math.round(mid + Math.sin(t * 0.6) * amp - MIN_GAP / 2);
+      const b = Math.round(mid + Math.sin(t * 0.6 + Math.PI) * amp + MIN_GAP / 2);
+      minInput.value = clamp(a, min, max - MIN_GAP);
+      maxInput.value = clamp(b, min + MIN_GAP, max);
+      update();
+      rafId = requestAnimationFrame(tick);
+    }
+
+    // Events
+    [minInput, maxInput].forEach(el => {
+      el.addEventListener('input', update);
+      el.addEventListener('pointerdown', () => setDragging(true));
+      el.addEventListener('pointerup', () => setDragging(false));
+      el.addEventListener('touchstart', () => setDragging(true), { passive: true });
+      el.addEventListener('touchend', () => setDragging(false));
+      el.addEventListener('keydown', e => {
+        // Make PageUp/PageDown faster adjustments
+        const step = +el.step || 1;
+        if (e.key === 'PageUp') { el.value = +el.value + step * 10; update(); }
+        if (e.key === 'PageDown') { el.value = +el.value - step * 10; update(); }
+      });
+    });
+
+    demoBtn.addEventListener('click', () => {
+      playing = !playing;
+      demoBtn.textContent = playing ? '⏸ Pause demo' : '▶️ Play demo';
+      demoBtn.setAttribute('aria-pressed', String(playing));
+      if (playing) {
+        cancelAnimationFrame(rafId);
+        rafId = requestAnimationFrame(tick);
+      } else {
+        cancelAnimationFrame(rafId);
+      }
+    });
+
+    resetBtn.addEventListener('click', () => {
+      minInput.value = 0;
+      maxInput.value = 8000;
+      t = 0; playing = false; demoBtn.textContent = '▶️ Play demo'; demoBtn.setAttribute('aria-pressed', 'false');
+      cancelAnimationFrame(rafId);
+      update();
+    });
+
+    // Initial paint
+    update();
+  </script>
+</body>
+
+</html>

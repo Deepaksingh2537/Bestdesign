@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Circular Swiper Gallery</title>
+
+    <!-- Script Add -->
+    <script src="./main.js"></script>
+    
+  <style>
+    /* ----------------------
+       Modern, accessible design
+       ---------------------- */
+    :root {
+      --surface: 28, 30, 34;
+      /* base surface (rgb) */
+      --primary: 88, 101, 242;
+      /* indigo */
+      --accent: 251, 100, 133;
+      /* coral */
+      --ring: 140, 220, 255;
+      /* cyan glow */
+
+      --text: 240, 244, 255;
+      --muted: 190, 198, 210;
+
+      --blur: 14px;
+      --elev: 0 10px 30px rgba(0, 0, 0, .35), inset 0 1px 0 rgba(255, 255, 255, .06);
+
+      /* Gallery geometry */
+      --count: 8;
+      /* JS updates this automatically */
+      --theta: calc(1turn / var(--count));
+      --start: -0.25turn;
+      /* 12 o'clock */
+      --r: clamp(170px, 28vmin, 320px);
+      --slide-size: clamp(120px, 22vmin, 220px);
+      --gap: clamp(10px, 1.8vmin, 18px);
+      --rot: 0;
+      /* current rotation in turns (JS) */
+      --snap-ms: 650ms;
+    }
+
+    html,
+    body {
+      height: 100%;
+    }
+
+    body {
+      margin: 0;
+      font-family: ui-sans-serif, -apple-system, Segoe UI, Roboto, Inter, system-ui, "Helvetica Neue", Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      color: rgb(var(--text));
+      background:
+        linear-gradient(180deg, #0b1021, #0a0d17, #090c14);
+      min-height: 100svh;
+      display: grid;
+      place-items: center;
+      overflow-x: hidden;
+    }
+
+    .app {
+      width: min(1100px, 96vw);
+      display: grid;
+      gap: 1.25rem;
+      justify-items: center;
+
+      /* === Responsive: make this a query container so sizes can adapt to width */
+      container-type: inline-size;
+    }
+
+    .header {
+      text-align: center;
+    }
+
+    .title {
+      margin: 0;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      font-size: clamp(1.3rem, 2.6vw + 1rem, 2.6rem);
+    }
+
+    .subtitle {
+      margin: .4rem 0 0;
+      color: rgb(var(--muted));
+      font-size: clamp(.9rem, .7vw + .8rem, 1.1rem);
+    }
+
+    /* Stage */
+    .stage {
+      position: relative;
+      width: calc(var(--r) * 2 + var(--slide-size) + 8vmin);
+      height: calc(var(--r) * 2 + var(--slide-size) + 8vmin);
+      display: grid;
+      place-items: center;
+      filter: drop-shadow(0 30px 60px rgba(0, 0, 0, .45));
+
+      /* === Responsive guard: avoid overflowing tiny screens */
+      max-width: 100%;
+      max-height: 100svh;
+    }
+
+    /* Glow ring & subtle grid */
+    .stage::before {
+      content: "";
+      position: absolute;
+      inset: 10%;
+      border-radius: 50%;
+      background: conic-gradient(from 0turn, rgba(var(--ring), .0) 0 20%, rgba(var(--ring), .35) 35%, rgba(var(--ring), 0) 50%, rgba(var(--ring), .25) 70%, rgba(var(--ring), 0) 100%);
+      filter: blur(40px) saturate(120%);
+      pointer-events: none;
+      opacity: .5;
+      animation: spin 40s linear infinite;
+    }
+
+    .ring {
+      position: relative;
+      width: calc(var(--r) * 2);
+      height: calc(var(--r) * 2);
+      border-radius: 50%;
+      transform: rotate(calc(var(--rot) * 1turn));
+      transition: transform var(--snap-ms) cubic-bezier(.2, .8, .16, 1);
+      will-change: transform;
+      touch-action: none;
+      /* we manage panning */
+      isolation: isolate;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(1turn);
+      }
+    }
+
+    /* The orbiting slides */
+    .slide {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: var(--slide-size);
+      height: var(--slide-size);
+      transform: rotate(calc(var(--start) + var(--theta) * var(--i))) translate(var(--r));
+      transform-origin: center center;
+      border: none;
+      background: transparent;
+      padding: 0;
+      outline: none;
+      cursor: pointer;
+    }
+
+    /* Inner card stays upright while the ring rotates */
+    .card {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      overflow: hidden;
+      transform: rotate(calc(-1 * (var(--start) + var(--theta) * var(--i) + var(--rot) * 1turn)));
+      box-shadow: var(--elev);
+      backdrop-filter: blur(var(--blur));
+      background: linear-gradient(180deg, rgba(255, 255, 255, .06), rgba(255, 255, 255, .02));
+      transition: transform var(--snap-ms) cubic-bezier(.2, .8, .16, 1),
+        box-shadow var(--snap-ms) ease,
+        scale var(--snap-ms) ease,
+        filter var(--snap-ms) ease;
+    }
+
+    .card img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      filter: saturate(1.05) contrast(1.02);
+    }
+
+    /* Halo + focus ring */
+    .card::after {
+      content: "";
+      position: absolute;
+      inset: -1.5px;
+      border-radius: 50%;
+      padding: 1.5px;
+      background: linear-gradient(180deg, rgba(var(--ring), .65), rgba(255, 255, 255, .2)) border-box;
+      -webkit-mask:
+        linear-gradient(#000 0 0) content-box,
+        linear-gradient(#000 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      opacity: .0;
+      transition: opacity var(--snap-ms) ease;
+      pointer-events: none;
+    }
+
+    .slide[data-active="true"] .card {
+      scale: 1.12;
+      box-shadow: 0 25px 70px rgba(0, 0, 0, .55), 0 0 0 1px rgba(255, 255, 255, .06) inset;
+      filter: drop-shadow(0 0 18px rgba(var(--ring), .35));
+    }
+
+    .slide[data-active="true"] .card::after {
+      opacity: .9;
+    }
+
+    /* Captions */
+    .label {
+      position: absolute;
+      left: 50%;
+      top: calc(100% + var(--gap));
+      transform: translateX(-50%);
+      white-space: nowrap;
+      background: rgba(255, 255, 255, .07);
+      color: rgb(var(--text));
+      font-size: clamp(.78rem, .55vw + .65rem, .95rem);
+      letter-spacing: .2px;
+      padding: .45rem .7rem;
+      border-radius: 999px;
+      box-shadow: var(--elev);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, .08);
+      pointer-events: none;
+      opacity: .75;
+    }
+
+    .slide[data-active="true"] .label {
+      opacity: 1;
+    }
+
+    /* Controls */
+    .controls {
+      display: flex;
+      align-items: center;
+      gap: .6rem;
+      background: rgba(255, 255, 255, .06);
+      padding: .5rem;
+      border-radius: 999px;
+      box-shadow: var(--elev);
+      border: 1px solid rgba(255, 255, 255, .08);
+      backdrop-filter: blur(10px);
+      margin-top: 100px;
+
+      /* allow wrapping on narrow screens without changing default layout */
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      appearance: none;
+      border: 0;
+      border-radius: 999px;
+      padding: .65rem .9rem;
+      background: linear-gradient(180deg, rgba(255, 255, 255, .16), rgba(255, 255, 255, .06));
+      color: rgb(var(--text));
+      font-weight: 600;
+      letter-spacing: .2px;
+      cursor: pointer;
+      transition: transform .2s ease, filter .2s ease, background .2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: .45rem;
+    }
+
+    .btn:hover {
+      filter: brightness(1.07);
+    }
+
+    .btn:active {
+      transform: translateY(1px) scale(.99);
+    }
+
+    .dotbar {
+      display: flex;
+      align-items: center;
+      gap: .35rem;
+      padding: .25rem .6rem;
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, .35);
+      border: 1px solid rgba(255, 255, 255, .35);
+      transition: width .35s ease, background .35s ease;
+    }
+
+    .dot.is-active {
+      width: 22px;
+      border-radius: 999px;
+      background: rgb(var(--ring));
+      border-color: transparent;
+    }
+
+    /* Accessibility helpers */
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      border: 0;
+    }
+
+    /* While dragging, disable transition for snappy feel */
+    .dragging .ring {
+      transition: none !important;
+    }
+
+    /* JS disabled: fall back to grid */
+    noscript .ring {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 16px;
+      height: auto;
+      width: 100%;
+    }
+
+    noscript .slide {
+      position: static;
+      transform: none;
+    }
+
+    /* Respect reduced motion */
+    @media (prefers-reduced-motion: reduce) {
+
+      .ring,
+      .card {
+        transition: none !important;
+      }
+
+      .stage::before {
+        animation: none;
+      }
+    }
+
+    /* ==========================================================
+       Responsive additions (preserve design, only scale geometry)
+       ========================================================== */
+
+    /* Scale geometry based on the .app container's width */
+    @container (max-width: 900px) {
+      .app {
+        /* same look, smaller min + fluid via container width (cqw) */
+        --r: clamp(140px, 34cqw, 320px);
+        --slide-size: clamp(100px, 26cqw, 220px);
+        --gap: clamp(8px, 1.6cqw, 18px);
+      }
+    }
+
+    /* Phones / narrow containers */
+    @container (max-width: 560px) {
+      .app {
+        --r: clamp(100px, 40cqw, 220px);
+        --slide-size: clamp(72px, 30cqw, 200px);
+        --gap: clamp(6px, 1.4cqw, 14px);
+      }
+      .stage {
+        /* tighten the outer margin so the ring fits */
+        width: calc(var(--r) * 2 + var(--slide-size) + 4vmin);
+        height: calc(var(--r) * 2 + var(--slide-size) + 4vmin);
+      }
+      .label {
+        font-size: clamp(.68rem, 3.2cqw, .9rem);
+      }
+      .btn {
+        padding: .55rem .75rem;
+      }
+      .dot {
+        width: 6px;
+        height: 6px;
+      }
+      .dot.is-active {
+        width: 16px;
+      }
+    }
+
+    /* Very short viewports (e.g., landscape phones) */
+    @media (max-height: 520px) {
+      .app {
+        --r: clamp(90px, 26vh, 180px);
+        --slide-size: clamp(64px, 22vh, 140px);
+      }
+      .controls {
+        margin-top: 40px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="app" aria-labelledby="h1">
+
+    <section class="stage" aria-label="Circular swiper stage">
+      <div id="ring" class="ring" role="listbox" aria-live="polite" aria-label="Image slides arranged around a circle"></div>
+    </section>
+
+    <div class="controls" aria-label="Gallery controls">
+      <button class="btn" id="prev" aria-label="Previous slide" title="Previous (←)">⟵ Prev</button>
+      <button class="btn" id="next" aria-label="Next slide" title="Next (→)">Next ⟶</button>
+      <div class="dotbar" id="dotbar" aria-hidden="true"></div>
+      <button class="btn" id="toggleAuto" aria-pressed="false" title="Autoplay">▶︎ Auto</button>
+    </div>
+
+    <p class="subtitle" id="status" aria-live="polite"></p>
+  </main>
+
+  <noscript>
+    <style>
+      .controls {
+        display: none
+      }
+    </style>
+    <div class="subtitle" style="text-align:center; max-width: 70ch;">JavaScript is disabled. The gallery is shown
+      as a simple grid.</div>
+  </noscript>
+
+  <script>
+    // -----------------------------
+    // Circular Swiper – Vanilla JS
+    // -----------------------------
+    (() => {
+      const images = [
+        {
+          src: "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?q=80&w=1200&auto=format&fit=crop",
+          alt: "Mountains above a calm lake at sunrise",
+          label: "Alpine Dawn",
+        },
+        {
+          src: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=1200&auto=format&fit=crop",
+          alt: "Soft ocean waves at sunset",
+          label: "Golden Coast",
+        },
+        {
+          src: "https://images.unsplash.com/photo-1482192596544-9eb780fc7f66?q=80&w=1200&auto=format&fit=crop",
+          alt: "Starry sky with the Milky Way",
+          label: "Milky Way",
+        },
+        {
+          src: "https://images.unsplash.com/photo-1526778548025-fa2f459cd5c1?q=80&w=1200&auto=format&fit=crop",
+          alt: "Desert dunes with soft shadows",
+          label: "Desert Dune",
+        },
+        {
+          src: "https://source.unsplash.com/featured/1200x800?misty,forest,light",
+          alt: "Misty forest with soft light",
+          label: "Misty Forest",
+        },
+        {
+          src: "https://images.unsplash.com/photo-1519681393784-d120267933ba?q=80&w=1200&auto=format&fit=crop",
+          alt: "City skyline at night",
+          label: "Neon City",
+        },
+        {
+          src: "https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?q=80&w=1200&auto=format&fit=crop",
+          alt: "Cliffs and roaring sea",
+          label: "Cliffside",
+        },
+        {
+          src: "https://images.unsplash.com/photo-1472214103451-9374bd1c798e?q=80&w=1200&auto=format&fit=crop",
+          alt: "Hot air balloons over a valley",
+          label: "Balloons",
+        },
+      ];
+
+      const root = document.documentElement;
+      const ring = document.getElementById('ring');
+      const prevBtn = document.getElementById('prev');
+      const nextBtn = document.getElementById('next');
+      const dotbar = document.getElementById('dotbar');
+      const status = document.getElementById('status');
+      const toggleAuto = document.getElementById('toggleAuto');
+
+      // Generate slides
+      ring.innerHTML = images.map((img, i) => `
+        <button class="slide" role="option" aria-selected="${i === 0}" aria-label="${img.label}" style="--i:${i}" data-index="${i}">
+          <div class="card">
+            <img src="${img.src}" alt="${img.alt}" loading="lazy" />
+            <span class="label">${img.label}</span>
+          </div>
+        </button>
+      `).join('');
+
+      // Generate dots
+      dotbar.innerHTML = images.map((_, i) => `<div class="dot" data-i="${i}"></div>`).join('');
+
+      const slides = Array.from(ring.querySelectorAll('.slide'));
+      const dots = Array.from(dotbar.querySelectorAll('.dot'));
+
+      const count = slides.length;
+      root.style.setProperty('--count', String(count));
+
+      const step = 1 / count;           // in turns
+      const start = -0.25;              // -0.25turn (12 o'clock), matches --start
+      let rot = 0;                      // current rotation in turns
+      let index = 0;                    // current active index
+      let autoTimer = null;
+
+      function setRot(t) {
+        rot = t;
+        root.style.setProperty('--rot', String(rot));
+      }
+
+      function toIndex(i, { snap = true } = {}) {
+        index = (i % count + count) % count; // wrap
+        const target = -start - index * step; // aligns chosen index to 12 o'clock
+        if (snap) {
+          ring.classList.remove('dragging');
+          setRot(target);
+        } else {
+          setRot(target);
+        }
+        updateState();
+      }
+
+      function nearestIndexFromRot(t) {
+        const raw = (-start - t) / step; // ideal index before rounding
+        return Math.round(raw);
+      }
+
+      function updateState() {
+        slides.forEach((el, i) => {
+          const active = i === index;
+          el.dataset.active = active ? 'true' : 'false';
+          el.setAttribute('aria-selected', active ? 'true' : 'false');
+          el.tabIndex = active ? 0 : -1;
+        });
+        dots.forEach((d, i) => d.classList.toggle('is-active', i === index));
+        status.textContent = `${images[index].label} (${index + 1} / ${count})`;
+      }
+
+      // Initial state
+      toIndex(0);
+
+      // Click a slide to bring to top
+      slides.forEach((el, i) => {
+        el.addEventListener('click', () => toIndex(i));
+        el.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toIndex(i); }
+        });
+      });
+
+      // Dots
+      dots.forEach((d, i) => d.addEventListener('click', () => toIndex(i)));
+
+      // Buttons
+      prevBtn.addEventListener('click', () => toIndex(index - 1));
+      nextBtn.addEventListener('click', () => toIndex(index + 1));
+
+      // Keyboard shortcuts on document
+      window.addEventListener('keydown', (e) => {
+        if (['INPUT', 'TEXTAREA'].includes(document.activeElement?.tagName)) return;
+        if (e.key === 'ArrowLeft') { e.preventDefault(); toIndex(index - 1); }
+        if (e.key === 'ArrowRight') { e.preventDefault(); toIndex(index + 1); }
+        if (e.key.toLowerCase() === 'home') { e.preventDefault(); toIndex(0); }
+        if (e.key.toLowerCase() === 'end') { e.preventDefault(); toIndex(count - 1); }
+      });
+
+      // Pointer drag rotation
+      let dragging = false, startAngle = 0, startRot = 0;
+      function angleAt(ev) {
+        const rect = ring.getBoundingClientRect();
+        const cx = rect.left + rect.width / 2;
+        const cy = rect.top + rect.height / 2;
+        const x = (ev.touches ? ev.touches[0].clientX : ev.clientX) - cx;
+        const y = (ev.touches ? ev.touches[0].clientY : ev.clientY) - cy;
+        return Math.atan2(y, x); // radians
+      }
+
+      const onPointerDown = (ev) => {
+        dragging = true;
+        ring.classList.add('dragging');
+        startAngle = angleAt(ev);
+        startRot = rot;
+      };
+      const onPointerMove = (ev) => {
+        if (!dragging) return;
+        const a = angleAt(ev);
+        const deltaTurns = (a - startAngle) / (Math.PI * 2);
+        setRot(startRot + deltaTurns);
+        // Live-highlight nearest as we rotate
+        const nearest = (nearestIndexFromRot(rot) % count + count) % count;
+        if (nearest !== index) {
+          index = nearest;
+          updateState();
+        }
+      };
+      const onPointerUp = () => {
+        if (!dragging) return;
+        dragging = false;
+        const nearest = nearestIndexFromRot(rot);
+        toIndex(nearest);
+      };
+
+      // Use pointer events if available, otherwise mouse/touch fallbacks
+      const hasPointer = 'onpointerdown' in window;
+      if (hasPointer) {
+        ring.addEventListener('pointerdown', (e) => { e.preventDefault(); ring.setPointerCapture(e.pointerId); onPointerDown(e); });
+        ring.addEventListener('pointermove', onPointerMove);
+        ring.addEventListener('pointerup', onPointerUp);
+        ring.addEventListener('pointercancel', onPointerUp);
+      } else {
+        ring.addEventListener('mousedown', (e) => { e.preventDefault(); onPointerDown(e); });
+        window.addEventListener('mousemove', onPointerMove);
+        window.addEventListener('mouseup', onPointerUp);
+        ring.addEventListener('touchstart', onPointerDown, { passive: true });
+        ring.addEventListener('touchmove', onPointerMove, { passive: true });
+        ring.addEventListener('touchend', onPointerUp, { passive: true });
+      }
+
+      // Wheel to step
+      ring.addEventListener('wheel', (e) => {
+        e.preventDefault();
+        const dir = Math.sign(e.deltaY || e.deltaX);
+        if (dir > 0) toIndex(index + 1); else if (dir < 0) toIndex(index - 1);
+      }, { passive: false });
+
+      // Autoplay (respects reduced motion)
+      function setAuto(on) {
+        const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        if (prefersReduced) on = false;
+        toggleAuto.setAttribute('aria-pressed', on ? 'true' : 'false');
+        toggleAuto.textContent = on ? '❚❚ Pause' : '▶︎ Auto';
+        if (autoTimer) { clearInterval(autoTimer); autoTimer = null; }
+        if (on) autoTimer = setInterval(() => toIndex(index + 1), 2500);
+      }
+      toggleAuto.addEventListener('click', () => setAuto(toggleAuto.getAttribute('aria-pressed') !== 'true'));
+
+      // Resize handling keeps things crisp
+      let rAF = 0;
+      window.addEventListener('resize', () => {
+        cancelAnimationFrame(rAF);
+        rAF = requestAnimationFrame(() => updateState());
+      });
+
+      // Public API example (optional): expose for quick tweaks
+      window.circularSwiper = { to: toIndex, next: () => toIndex(index + 1), prev: () => toIndex(index - 1) };
+    })();
+  </script>
+</body>
+
+</html>

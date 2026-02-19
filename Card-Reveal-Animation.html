@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Card Reveal Animation</title>
+
+    <!-- Script Add -->
+    <script src="./main.js"></script>
+
+    <link rel="stylesheet" href="style.css">
+    <style>
+        :root {
+            --sizeVar: 10px;
+        }
+
+        body {
+            background: linear-gradient(135deg, #8a2be2, #ff69b4) !important;
+            position: absolute;
+            display: flex;
+            inset: 32px;
+            justify-content: center;
+            align-items: center;
+        }
+
+
+        .flex-wrapper {
+            width: calc(var(--sizeVar) * 40);
+            display: flex;
+            flex-direction: column;
+            gap: calc(var(--sizeVar) * 1.2);
+        }
+
+        .flex-wrapper:hover .item {
+            margin-top: 0;
+            transform: rotate(0deg);
+        }
+
+        .item:nth-of-type(1) {
+            margin-top: 0 !important;
+        }
+
+        .item h2 {
+            margin: 0;
+            color: #333333;
+            font-family: "Poppins", sans-serif;
+            font-weight: 600;
+            font-style: normal;
+            font-size: calc(var(--sizeVar) * 2);
+        }
+
+        .item img {
+            width: calc(var(--sizeVar) * 16.4);
+            height: calc(var(--sizeVar) * 16.4);
+            aspect-ratio: 1 / 1;
+            object-fit: cover;
+            border-radius: calc(var(--sizeVar) * 0.6);
+        }
+
+        .item .innerContent {
+            display: flex;
+            flex-direction: column;
+            height: calc(var(--sizeVar) * 16.4);
+            gap: calc(var(--sizeVar) * 0.4);
+        }
+
+        .item p {
+            display: -webkit-box;
+            -webkit-box-orient: vertical;
+            -webkit-line-clamp: 4;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            color: #666666;
+            font-family: "Poppins", sans-serif;
+            font-weight: 400;
+            font-style: normal;
+            font-size: calc(var(--sizeVar) * 1.2);
+        }
+
+        .item button {
+            border-radius: calc(var(--sizeVar) * 0.8);
+            border: none;
+            background-color: #35c4b6;
+            color: #ffffff;
+            padding: calc(var(--sizeVar) * 0.6);
+            font-family: "Poppins", sans-serif;
+            font-weight: 600;
+            font-style: normal;
+            font-size: calc(var(--sizeVar) * 1.4);
+            cursor: pointer;
+        }
+
+        .item button:hover {
+            background-color: #40e0d0;
+            box-shadow: 0 0 calc(var(--sizeVar) * 1.2) #40e0d088;
+        }
+
+        .item button:active {
+            background-color: #40e0d0;
+            box-shadow: none;
+        }
+
+        .item {
+            display: flex;
+            gap: calc(var(--sizeVar) * 1.6);
+            width: 100%;
+            height: calc(var(--sizeVar) * 20);
+            padding: calc(var(--sizeVar) * 1.6);
+            box-sizing: border-box;
+            background: #ffffff;
+            border-radius: calc(var(--sizeVar) * 0.8);
+            border: 1px solid lightgray;
+            box-shadow: 0 0 calc(var(--sizeVar) * 0.6) #00000022;
+            margin-top: calc(var(--sizeVar) * -20.8);
+            transform: rotate(2deg);
+            cursor: pointer;
+            user-select: none;
+            transition: margin-top 300ms ease-in-out 0s, transform 300ms ease-in-out 0s;
+        }
+
+        .item:nth-of-type(2) {
+            transform: rotate(-4deg);
+        }
+
+        .item:nth-of-type(3) {
+            transform: rotate(0deg);
+        }
+
+        .item:hover {
+            border-color: #40e0d0;
+            box-shadow: 0 0 calc(var(--sizeVar) * 1.2) #40e0d088;
+        }
+
+        @media screen and (max-width: 600px) {
+            :root {
+                --sizeVar: 6px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="flex-wrapper">
+        <div class="item">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/c/c9/Kinkaku3402CBcropped.jpg" />
+            <div class="innerContent">
+                <h2>Kyoto, Japan</h2>
+                <p>Kyoto is one of the oldest municipalities in Japan, having been chosen in 794 as the new seat of
+                    Japan's imperial court by Emperor Kanmu. The original city, named Heian-kyō, was arranged in
+                    accordance with traditional Chinese feng shui following the model of the ancient Chinese capitals of
+                    Chang'an and Luoyang.</p>
+                <button>More info</button>
+            </div>
+        </div>
+        <div class="item">
+            <img
+                src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/61/San_Francisco_from_the_Marin_Headlands_in_August_2022.jpg/2560px-San_Francisco_from_the_Marin_Headlands_in_August_2022.jpg" />
+            <div class="innerContent">
+                <h2>San Francisco, CA</h2>
+                <p>Prior to European settlement, the modern city proper was inhabited by the Yelamu, who spoke a
+                    language now referred to as Ramaytush Ohlone. On June 29, 1776, settlers from New Spain established
+                    the Presidio of San Francisco at the Golden Gate, and the Mission San Francisco de Asís a few miles
+                    away, both named for Francis of Assisi.</p>
+                <button>More Info</button>
+            </div>
+        </div>
+        <div class="item">
+            <img
+                src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5c/%CE%A3%CE%B1%CE%B3%CF%81%CE%AC%CE%B4%CE%B1_%CE%A6%CE%B1%CE%BC%CE%AF%CE%BB%CE%B9%CE%B1_2941_%28cropped%29.jpg/1024px-%CE%A3%CE%B1%CE%B3%CF%81%CE%AC%CE%B4%CE%B1_%CE%A6%CE%B1%CE%BC%CE%AF%CE%BB%CE%B9%CE%B1_2941_%28cropped%29.jpg" />
+            <div class="innerContent">
+                <h2>Barcelona, Spain</h2>
+                <p>Founded as a Roman city, in the Middle Ages Barcelona became the capital of the County of Barcelona.
+                    After joining with the Kingdom of Aragon to form the confederation of the Crown of Aragon,
+                    Barcelona, which continued to be the capital of the Principality of Catalonia, became the most
+                    important city in the Crown of Aragon and the main economic and administrative centre of the Crown,
+                    only to be overtaken by Valencia, wrested from Moorish control by the Catalans, shortly before the
+                    dynastic union between the Crown of Castile and the Crown of Aragon in 1492.</p>
+                <button>More Info</button>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

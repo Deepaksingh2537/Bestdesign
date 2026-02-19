@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="style.css">
+
+      <!-- Script Add -->
+  <script src="./main.js"></script>
+  
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Chakra+Petch:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap');
+
+        body {
+            padding: 0;
+            margin: 0;
+            min-height: 100vh;
+            display: grid;
+            place-items: center;
+            background: black;
+            font-family: "Chakra Petch", sans-serif;
+            overflow: hidden;
+            color: white;
+            letter-spacing: .4em;
+        }
+
+        .scene {
+            position: relative;
+            width: 300px;
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #emoji {
+            font-size: 80px;
+        }
+
+        #progress {
+            font-size: 30px;
+        }
+
+        #loader {
+            --filter: drop-shadow(0px 0px 2px #fff) drop-shadow(0px 0px 3px #00e5ff) blur(0px);
+            --filter2: drop-shadow(0px 0px 25px #fff) drop-shadow(0px 0px 30px #00e5ff) blur(6px);
+            --t1: scale(1) skew(0deg);
+            --t2: scale(2) skew(10deg);
+            --t3: scale(2) skew(-10deg);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            gap: 0px;
+            filter: var(--filter);
+        }
+
+        .active {
+            animation: scaleUp .09s ease-in-out;
+        }
+
+        @keyframes scaleUp {
+            0% {
+                transform: var(--t1);
+                filter: var(--filter);
+            }
+
+            50% {
+                transform: var(--t2);
+                filter: var(--filter2);
+            }
+
+            60% {
+                transform: var(--t3);
+            }
+
+            100% {
+                transform: var(--t1);
+                filter: var(--filter);
+            }
+        }
+    </style>
+
+</head>
+
+<body>
+    <div class="scene">
+        <div id="loader">
+            <div id="emoji">😴</div>
+            <div id="progress">0%</div>
+        </div>
+    </div>
+    <script>
+        const progressText = document.querySelector('#progress');
+        const emojiText = document.querySelector('#emoji');
+        const loader = document.querySelector('#loader');
+
+        const emojis = ["😴", "😪", "😕", "😐", "🙂", "😊", "😀", "😃", "😄", "😁", "🥳"];
+        let progress = 0;
+        let lastUpdateTime = null;
+
+        function updateProgress(timestamp) {
+            if (!lastUpdateTime) {
+                lastUpdateTime = timestamp;
+            }
+
+            const deltaTime = timestamp - lastUpdateTime;
+
+            if (deltaTime >= 120) {
+                progress += 1;
+                progressText.textContent = `${progress}%`;
+
+                if (progress % 10 === 0 && progress <= 100) {
+                    const emojiIndex = progress / 10;
+                    emojiText.textContent = emojis[emojiIndex];
+                    emojiText.classList.add("active");
+
+                    setTimeout(() => {
+                        emojiText.classList.remove("active");
+                    }, 500);
+                }
+
+                lastUpdateTime = timestamp;
+            }
+
+            if (progress < 100) {
+                requestAnimationFrame(updateProgress);
+            }
+        }
+        requestAnimationFrame(updateProgress);
+    </script>
+</body>
+
+</html>

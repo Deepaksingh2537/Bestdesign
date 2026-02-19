@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Particles – Rainbow Nodes Edition</title>
+
+  <!-- Script Add -->
+  <script src="./main.js"></script>
+
+  <style>
+    html,
+    body {
+      height: 100%;
+    }
+
+    body {
+      margin: 0;
+      background: #0b0b0e;
+      color: #e6e6f0;
+      font: 14px/1.5 system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+    }
+
+    #wrap {
+      position: fixed;
+      inset: 0;
+    }
+
+    canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    .hud {
+      position: fixed;
+      left: 12px;
+      bottom: 12px;
+      background: #1117;
+      backdrop-filter: blur(6px);
+      padding: 10px 12px;
+      border-radius: 12px;
+    }
+
+    .hud b {
+      font-weight: 600;
+    }
+
+    .hud input[type="range"] {
+      width: 160px;
+    }
+
+    .hud .row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 6px 0;
+    }
+
+    .hud label {
+      width: 84px;
+      color: #cfd;
+      opacity: .9
+    }
+  </style>
+</head>
+
+<body>
+  <div id="wrap"><canvas id="pp"></canvas></div>
+
+  <div class="hud" id="hud">
+    <div class="row"><label>Particles</label><input id="count" type="range" min="50" max="2000" step="10"><b
+        id="countVal"></b></div>
+    <div class="row"><label>Speed</label><input id="speed" type="range" min="0.1" max="2.5" step="0.1"><b
+        id="speedVal"></b></div>
+    <div class="row"><label>Link dist</label><input id="dist" type="range" min="30" max="220" step="5"><b
+        id="distVal"></b></div>
+  </div>
+
+  <script type="module">
+    // perParticles.js — Rainbow Nodes Edition
+    // Same high‑performance core, but particles have per‑node colors (like the reference image).
+    // Uses typed arrays + spatial hashing for O(n) linking.
+    // MIT License.
+
+    class PerParticles {
+      constructor(canvas, opts = {}) {
+        this.canvas = canvas;
+        this.ctx = canvas.getContext('2d', { alpha: false });
+        this.opts = Object.assign({
+          background: '#0b0b0e',
+          linkColor: '#ffffff',    // line color (edges)
+          particleRadius: 1.4,
+          maxDistance: 140,
+          speed: 0.6,
+          density: 0.11,           // particles per 10k px^2 (scaled by DPR)
+          pointer: true,
+          rainbow: true,           // per‑particle color
+          sat: 0.85,               // HSV saturation for nodes
+          val: 1.00,               // HSV value for nodes
+        }, opts);
+
+        // Internal state
+        this.w = 0; this.h = 0; this.dpr = Math.max(1, window.devicePixelRatio || 1);
+        this.n = 0;           // particle count
+        this.data = null;     // Float32Array [x,y,vx,vy]*n
+        this.col = null;      // Uint8Array [r,g,b]*n for per‑particle color
+        this.next = null;     // Int32Array next index for buckets
+        this.mouseIdx = -1;   // index of pointer pseudo‑particle
+        this.running = false; this.lastT = 0;
+
+        // Grid fields
+        this.cellSize = Math.max(40, this.opts.maxDistance | 0);
+        this.gridW = 0; this.gridH = 0; this.head = null;
+
+        // Precompute link color components
+        this.linkRGB = PerParticles.hexToRgb(this.opts.linkColor);
+
+        // Bindings
+        this._onResize = this._onResize.bind(this);
+        this._onMove = this._onMove.bind(this);
+        this._tick = this._tick.bind(this);
+
+        // Init
+        this._onResize();
+        window.addEventListener('resize', this._onResize, { passive: true });
+        if (this.opts.pointer) {
+          window.addEventListener('mousemove', this._onMove, { passive: true });
+          window.addEventListener('touchmove', e => this._onMove(e.touches[0]), { passive: true });
+        }
+      }
+
+      static hexToRgb(h) {
+        const s = h.replace('#', '');
+        const bigint = parseInt(s.length === 3 ? s.split('').map(x => x + x).join('') : s, 16);
+        return { r: (bigint >> 16) & 255, g: (bigint >> 8) & 255, b: bigint & 255 };
+      }
+
+      static hsvToRgb(h, s, v) { // h in [0,1)
+        const i = Math.floor(h * 6);
+        const f = h * 6 - i;
+        const p = v * (1 - s);
+        const q = v * (1 - f * s);
+        const t = v * (1 - (1 - f) * s);
+        let r, g, b;
+        switch (i % 6) {
+          case 0: r = v; g = t; b = p; break;
+          case 1: r = q; g = v; b = p; break;
+          case 2: r = p; g = v; b = t; break;
+          case 3: r = p; g = q; b = v; break;
+          case 4: r = t; g = p; b = v; break;
+          case 5: r = v; g = p; b = q; break;
+        }
+        return [(r * 255) | 0, (g * 255) | 0, (b * 255) | 0];
+      }
+
+      _alloc(n) {
+        this.n = n;
+        this.data = new Float32Array(n * 4);
+        this.col = new Uint8Array(n * 3);
+        this.next = new Int32Array(n);
+      }
+
+      _seed() {
+        const { data: nv, col: c, n } = this;
+        const W = this.w, H = this.h, S = this.opts.speed * this.dpr;
+        // Use golden‑angle progression to spread hues evenly
+        const GA = 0.61803398875; let hue = Math.random();
+        for (let i = 0; i < n; i++) {
+          const p = i * 4; const q = i * 3;
+          nv[p] = Math.random() * W;
+          nv[p + 1] = Math.random() * H;
+          const a = Math.random() * Math.PI * 2;
+          const s = (0.2 + Math.random() * 0.8) * S; // varied speeds
+          nv[p + 2] = Math.cos(a) * s;
+          nv[p + 3] = Math.sin(a) * s;
+
+          hue = (hue + GA) % 1;
+          const [r, g, b] = this.opts.rainbow
+            ? PerParticles.hsvToRgb(hue, this.opts.sat, this.opts.val)
+            : [220, 200, 255];
+          c[q] = r; c[q + 1] = g; c[q + 2] = b;
+        }
+        // Reserve last slot for mouse pointer particle if enabled
+        if (this.opts.pointer) {
+          this.mouseIdx = n - 1;
+          const p = this.mouseIdx * 4; const q = this.mouseIdx * 3;
+          nv[p] = this.w * 0.5; nv[p + 1] = this.h * 0.5; nv[p + 2] = 0; nv[p + 3] = 0;
+          c[q] = 255; c[q + 1] = 255; c[q + 2] = 255; // pointer visible
+        }
+      }
+
+      _onResize() {
+        const cssW = this.canvas.clientWidth || window.innerWidth;
+        const cssH = this.canvas.clientHeight || window.innerHeight;
+        this.dpr = Math.max(1, window.devicePixelRatio || 1);
+        this.w = Math.floor(cssW * this.dpr);
+        this.h = Math.floor(cssH * this.dpr);
+        this.canvas.width = this.w;
+        this.canvas.height = this.h;
+
+        // Estimate particle count by area (dens per 10k px^2)
+        const base = Math.round((this.w * this.h) / (10000) * this.opts.density);
+        const n = Math.max(50, base) + (this.opts.pointer ? 1 : 0);
+
+        this._alloc(n);
+
+        // grid size depends on maxDistance
+        this.cellSize = Math.max(32, this.opts.maxDistance | 0);
+        this.gridW = Math.ceil(this.w / this.cellSize);
+        this.gridH = Math.ceil(this.h / this.cellSize);
+        this.head = new Int32Array(this.gridW * this.gridH);
+
+        // background clear
+        this.ctx.fillStyle = this.opts.background;
+        this.ctx.fillRect(0, 0, this.w, this.h);
+
+        this._seed();
+      }
+
+      _onMove(e) {
+        if (this.mouseIdx < 0) return;
+        const rect = this.canvas.getBoundingClientRect();
+        const mx = (e.clientX - rect.left) * this.dpr;
+        const my = (e.clientY - rect.top) * this.dpr;
+        const p = this.mouseIdx * 4;
+        this.data[p] = mx; this.data[p + 1] = my; // no velocity
+      }
+
+      start() { if (!this.running) { this.running = true; this.lastT = performance.now(); requestAnimationFrame(this._tick); } }
+      stop() { this.running = false; }
+
+      setOptions(newOpts) {
+        Object.assign(this.opts, newOpts);
+        this.linkRGB = PerParticles.hexToRgb(this.opts.linkColor);
+        this._onResize();
+      }
+
+      _bucket(x, y) {
+        const cx = Math.max(0, Math.min(this.gridW - 1, (x / this.cellSize) | 0));
+        const cy = Math.max(0, Math.min(this.gridH - 1, (y / this.cellSize) | 0));
+        return cy * this.gridW + cx;
+      }
+
+      _buildGrid() {
+        this.head.fill(-1);
+        const d = this.data; const n = this.n;
+        for (let i = 0; i < n; i++) {
+          const p = i * 4; const h = this._bucket(d[p], d[p + 1]);
+          this.next[i] = this.head[h]; this.head[h] = i;
+        }
+      }
+
+      _integrate(dt) {
+        const d = this.data; const n = this.n; const W = this.w, H = this.h;
+        for (let i = 0; i < n; i++) {
+          if (i === this.mouseIdx) continue; // mouse stays where placed
+          const p = i * 4; let x = d[p], y = d[p + 1];
+          x += d[p + 2] * dt; y += d[p + 3] * dt;
+          // wrap around edges (cheaper than bounce)
+          if (x < 0) x += W; else if (x >= W) x -= W;
+          if (y < 0) y += H; else if (y >= H) y -= H;
+          d[p] = x; d[p + 1] = y;
+        }
+      }
+
+      _render() {
+        const ctx = this.ctx; const d = this.data; const n = this.n;
+        const maxD = this.opts.maxDistance * this.dpr; const maxD2 = maxD * maxD;
+        const r = this.opts.particleRadius * this.dpr;
+
+        // clear background
+        ctx.fillStyle = this.opts.background;
+        ctx.globalAlpha = 1.0;
+        ctx.fillRect(0, 0, this.w, this.h);
+
+        // Draw links using spatial hashing — check neighbors in 9 cells only
+        const { r: lr, g: lg, b: lb } = this.linkRGB;
+        ctx.lineWidth = Math.max(0.5, (0.8 * this.dpr));
+
+        const w = this.gridW, h = this.gridH, head = this.head, next = this.next;
+        for (let gy = 0; gy < h; gy++) {
+          for (let gx = 0; gx < w; gx++) {
+            const gi = gy * w + gx;
+            for (let i = head[gi]; i !== -1; i = next[i]) {
+              const ip = i * 4; const ix = d[ip], iy = d[ip + 1];
+              for (let ny = -1; ny <= 1; ny++) {
+                const cy = gy + ny; if (cy < 0 || cy >= h) continue;
+                for (let nx = -1; nx <= 1; nx++) {
+                  const cx = gx + nx; if (cx < 0 || cx >= w) continue;
+                  for (let j = head[cy * w + cx]; j !== -1; j = next[j]) {
+                    if (j <= i) continue; // avoid duplicates
+                    const jp = j * 4; const dx = d[jp] - ix, dy = d[jp + 1] - iy; const dist2 = dx * dx + dy * dy;
+                    if (dist2 <= maxD2) {
+                      const a = 1 - Math.sqrt(dist2) / maxD; // alpha by distance
+                      ctx.strokeStyle = `rgba(${lr},${lg},${lb},${(0.25 * a).toFixed(3)})`;
+                      ctx.beginPath(); ctx.moveTo(ix, iy); ctx.lineTo(d[jp], d[jp + 1]); ctx.stroke();
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+
+        // Draw particles (per‑node colors)
+        const c = this.col;
+        for (let i = 0; i < n; i++) {
+          const p = i * 4, q = i * 3; const x = d[p], y = d[p + 1];
+          ctx.fillStyle = `rgb(${c[q]},${c[q + 1]},${c[q + 2]})`;
+          ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill();
+        }
+      }
+
+      _tick(t) {
+        if (!this.running) return;
+        const dt = Math.min(64, t - this.lastT) / 16.6667; // ~60fps units
+        this.lastT = t;
+        this._integrate(dt);
+        this._buildGrid();
+        this._render();
+        requestAnimationFrame(this._tick);
+      }
+    }
+
+    // --- Boot the demo (rainbow nodes + white links) ---
+    const canvas = document.getElementById('pp');
+    const pp = new PerParticles(canvas, {
+      linkColor: '#ffffff',
+      maxDistance: 150,
+      particleRadius: 1.4,
+      speed: 0.6,
+      density: 0.11,
+      rainbow: true,
+    });
+    pp.start();
+
+    // HUD controls (for easy tweaking)
+    const $ = sel => document.querySelector(sel);
+    const fmt = v => (typeof v === 'number' ? v.toFixed(0) : v);
+    const bind = (id, get, set) => {
+      const el = $(id), out = $(id + "Val");
+      el.value = get(); out.textContent = fmt(get());
+      el.addEventListener('input', () => { set(parseFloat(el.value)); out.textContent = fmt(get()); });
+    };
+    bind('#count', () => pp.n - (pp.opts.pointer ? 1 : 0), v => {
+      const pointer = pp.opts.pointer ? 1 : 0;
+      pp._alloc(Math.max(10, v) + pointer);
+      pp._seed();
+    });
+    bind('#speed', () => pp.opts.speed, v => { pp.opts.speed = v; });
+    bind('#dist', () => pp.opts.maxDistance, v => { pp.opts.maxDistance = v; pp.cellSize = Math.max(32, v | 0); pp._onResize(); });
+
+    // expose globally for quick fiddling
+    window.perParticles = pp;
+  </script>
+</body>
+
+</html>

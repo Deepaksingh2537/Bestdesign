@@ -1,0 +1,595 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <title>Zica Studies Zica</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="icon" href="assets/favicon.jpg" type="image/x-icon">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+  <!-- Script Add -->
+  <script src="./main.js"></script>
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@400;700&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --padding: 10vmin;
+      --color-background: #D0CBC7;
+      --font-size-large: 8vw;
+      --font-size-medium: 4vw;
+      --font-size-normal: 2vw;
+    }
+
+    @media (min-width: 800px) {
+      :root {
+        --font-size-large: 64px;
+        --font-size-medium: 32px;
+        --font-size-normal: 16px;
+      }
+    }
+
+    @media (max-width: 500px) {
+      :root {
+        --font-size-large: 40px;
+        --font-size-medium: 20px;
+        --font-size-normal: 14px;
+      }
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      min-height: 100%;
+      min-width: 100%;
+      font-family: 'Libre Baskerville', serif;
+      background-color: var(--color-background);
+      font-weight: 400;
+      font-size: var(--font-size-normal);
+      overflow-x: hidden;
+    }
+
+    a {
+      color: #fff;
+    }
+
+    ul {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    li {
+      margin-top: 10px;
+    }
+
+    canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 2;
+      pointer-events: none;
+      visibility: hidden;
+      opacity: 0;
+    }
+
+    .solid {
+      clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%);
+    }
+
+    .wireframe {
+      clip-path: polygon(0% 100%, 100% 100%, 100% 100%, 0% 100%);
+    }
+
+    .content {
+      position: relative;
+      z-index: 1;
+    }
+
+    .content .trigger {
+      position: absolute;
+      top: 0;
+      height: 100%;
+    }
+
+    .section {
+      position: relative;
+      padding: var(--padding);
+      --pad2: calc(var(--padding) * 2);
+      width: calc(100vw - var(--pad2));
+      height: calc(100vh - var(--pad2));
+      margin: 0 auto;
+      z-index: 2;
+    }
+
+    .section.dark {
+      color: #fff;
+      background-color: #000;
+    }
+
+    .section.right {
+      text-align: right;
+    }
+
+    .blueprint {
+      position: relative;
+      background-color: #131C2A;
+      background-image:
+        linear-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.1) 1px, transparent 1px),
+        linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, .05) 1px, transparent 1px);
+      background-size: 100px 100px, 100px 100px, 20px 20px, 20px 20px;
+      background-position: -2px -2px, -2px -2px, -1px -1px, -1px -1px;
+      background-attachment: fixed;
+    }
+
+    .blueprint svg {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      stroke: #fff;
+      pointer-events: none;
+      visibility: hidden;
+    }
+
+    .blueprint .dark {
+      background-color: transparent;
+    }
+
+    .ground-container {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .ground-container .parallax {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: -100px;
+      background-repeat: no-repeat;
+      background-position: top center;
+      background-size: cover;
+      transform-origin: top center;
+    }
+
+    .ground-container .ground {
+      z-index: -1;
+      background-image: url("https://assets.codepen.io/557388/background-reduced.jpg");
+    }
+
+    .ground-container .clouds {
+      z-index: 2;
+      background-image: url("https://assets.codepen.io/557388/clouds.png");
+    }
+
+    .scroll-cta,
+    .credits {
+      position: absolute;
+      bottom: var(--padding);
+    }
+
+    .scroll-cta {
+      font-size: var(--font-size-medium);
+      opacity: 0;
+    }
+
+    .sunset {
+      background: url("https://assets.codepen.io/557388/sunset-reduced.jpg") no-repeat top center;
+      background-size: cover;
+      transform-origin: top center;
+    }
+
+    h1,
+    h2 {
+      font-size: var(--font-size-large);
+      margin: 0 0 2vmin 0;
+      font-weight: 700;
+      display: inline;
+    }
+
+    h3 {
+      font-size: var(--font-size-medium);
+      font-weight: 400;
+      margin: 0;
+    }
+
+    .end h2 {
+      margin-bottom: 50vh;
+    }
+
+    .loading {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: var(--font-size-medium);
+      background: transparent;
+    }
+  </style>
+
+  <!-- Libraries (deferred, maintain order) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" defer></script>
+
+  <!-- Three.js (using r128 for stable non-module OBJLoader global) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/examples/js/loaders/OBJLoader.min.js"
+    defer></script>
+</head>
+
+<body>
+  <div class="content">
+    <div class="loading">Loading</div>
+    <div class="trigger"></div>
+
+    <div class="section">
+      <h1>Airplanes.</h1>
+      <h3>The beginners guide.</h3>
+      <p>You've probably forgotten what these are.</p>
+      <div class="scroll-cta">Scroll</div>
+    </div>
+
+    <div class="section right">
+      <h2>They're kinda like buses...</h2>
+    </div>
+
+    <div class="ground-container">
+      <div class="parallax ground"></div>
+
+      <div class="section right">
+        <h2>..except they leave the ground.</h2>
+        <p>Saaay what!?.</p>
+      </div>
+
+      <div class="section">
+        <h2>They fly through the sky.</h2>
+        <p>For realsies!</p>
+      </div>
+
+      <div class="section right">
+        <h2>Defying all known physical laws.</h2>
+        <p>It's actual magic!</p>
+      </div>
+
+      <div class="parallax clouds"></div>
+    </div>
+
+    <div class="blueprint">
+      <!-- Correct attribute is viewBox (case-sensitive) -->
+      <svg width="100%" height="100%" viewBox="0 0 100 100" aria-hidden="true">
+        <line id="line-length" x1="10" y1="80" x2="90" y2="80" stroke-width="0.5"></line>
+        <path id="line-wingspan" d="M10 50 L40 35 M60 35 L90 50" stroke-width="0.5" fill="none"></path>
+        <circle id="circle-phalange" cx="60" cy="60" r="15" fill="transparent" stroke-width="0.5"></circle>
+      </svg>
+
+      <div class="section dark">
+        <h2>The facts and figures.</h2>
+        <p>Lets get into the nitty gritty...</p>
+      </div>
+      <div class="section dark length">
+        <h2>Length.</h2>
+        <p>Long.</p>
+      </div>
+      <div class="section dark wingspan">
+        <h2>Wing Span.</h2>
+        <p>I dunno, longer than a cat probably.</p>
+      </div>
+      <div class="section dark phalange">
+        <h2>Left Phalange</h2>
+        <p>Missing</p>
+      </div>
+      <div class="section dark">
+        <h2>Engines</h2>
+        <p>Turbine funtime</p>
+      </div>
+    </div>
+
+    <div class="sunset">
+      <div class="section"></div>
+      <div class="section end">
+        <h2>Fin.</h2>
+        <ul class="credits">
+          <li>Plane model by <a href="https://poly.google.com/view/8ciDd9k8wha" target="_blank"
+              rel="noopener">Google</a></li>
+          <li>Animated using <a href="https://greensock.com/scrolltrigger/" target="_blank" rel="noopener">GSAP
+              ScrollTrigger</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ---- Helpers: SVG line-draw without DrawSVGPlugin ----
+    function prepStroke(el) {
+      const len = (el.getTotalLength ? el.getTotalLength() : 0) || 0;
+      el.style.strokeDasharray = len;
+      el.style.strokeDashoffset = len;
+      el.dataset.pathLength = String(len);
+    }
+    function drawStroke(el, progress) { // progress 0..1
+      const len = parseFloat(el.dataset.pathLength || '0');
+      el.style.strokeDashoffset = (1 - progress) * len;
+    }
+
+    // ---- Three.js Scene class ----
+    class Scene {
+      constructor(model) {
+        this.views = [{ bottom: 0, height: 1 }, { bottom: 0, height: 0 }];
+
+        this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        this.renderer.setSize(window.innerWidth, window.innerHeight);
+        this.renderer.shadowMap.enabled = true;
+        this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+        document.body.appendChild(this.renderer.domElement);
+
+        this.scene = new THREE.Scene();
+
+        for (let i = 0; i < this.views.length; i++) {
+          const view = this.views[i];
+          const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 2000);
+          camera.position.fromArray([0, 0, 180]);
+          camera.layers.disableAll();
+          camera.layers.enable(i);
+          camera.lookAt(new THREE.Vector3(0, 5, 0));
+          view.camera = camera;
+        }
+
+        // Lights
+        this.light = new THREE.PointLight(0xffffff, 0.75);
+        this.light.position.set(70, -20, 150);
+        this.scene.add(this.light);
+
+        this.softLight = new THREE.AmbientLight(0xffffff, 1.5);
+        this.scene.add(this.softLight);
+
+        // Model & wireframe overlay
+        this.modelGroup = new THREE.Group();
+
+        // Defensive: find first mesh geometry for edges
+        let firstMesh = null;
+        model.traverse((child) => {
+          if (!firstMesh && child.isMesh) firstMesh = child;
+          if (child.isMesh) {
+            child.material = new THREE.MeshPhongMaterial({
+              color: 0x171511, specular: 0xD0CBC7, shininess: 5, flatShading: true
+            });
+          }
+        });
+
+        if (firstMesh) {
+          const edges = new THREE.EdgesGeometry(firstMesh.geometry);
+          const line = new THREE.LineSegments(edges);
+          line.material.depthTest = false;
+          line.material.opacity = 0.5;
+          line.material.transparent = true;
+          line.position.set(0.5, 0.2, -1);
+
+          model.layers.set(0);
+          line.layers.set(1);
+
+          this.modelGroup.add(model);
+          this.modelGroup.add(line);
+        } else {
+          this.modelGroup.add(model);
+        }
+
+        this.scene.add(this.modelGroup);
+
+        // Bind + initial render
+        this.onResize = this.onResize.bind(this);
+        window.addEventListener('resize', this.onResize, { passive: true });
+        this.onResize();
+        this.render();
+      }
+
+      render = () => {
+        for (let i = 0; i < this.views.length; i++) {
+          const view = this.views[i];
+          const camera = view.camera;
+          const bottom = Math.floor(this.h * view.bottom);
+          const height = Math.floor(this.h * view.height);
+
+          this.renderer.setViewport(0, 0, this.w, this.h);
+          this.renderer.setScissor(0, bottom, this.w, height);
+          this.renderer.setScissorTest(true);
+
+          camera.aspect = this.w / this.h;
+          this.renderer.render(this.scene, camera);
+        }
+      }
+
+      onResize() {
+        this.w = window.innerWidth;
+        this.h = window.innerHeight;
+
+        for (let i = 0; i < this.views.length; i++) {
+          const camera = this.views[i].camera;
+          camera.aspect = this.w / this.h;
+          const camZ = (window.innerWidth - (this.w * 1)) / 3;
+          camera.position.z = camZ < 180 ? 180 : camZ;
+          camera.updateProjectionMatrix();
+        }
+
+        this.renderer.setSize(this.w, this.h);
+        this.render();
+      }
+    }
+
+    // ---- App setup ----
+    function loadModel() {
+      // GSAP plugins
+      gsap.registerPlugin(ScrollTrigger);
+
+      // Prepare SVG stroke animations
+      const svg = document.querySelector('.blueprint svg');
+      const lineLength = document.querySelector('#line-length');
+      const lineWing = document.querySelector('#line-wingspan');
+      const circlePh = document.querySelector('#circle-phalange');
+
+      [lineLength, lineWing, circlePh].forEach(el => el && prepStroke(el));
+
+      let object;
+      function onLoaded() {
+        setupAnimation(object, { lineLength, lineWing, circlePh, svg });
+      }
+
+      // THREE LoadingManager
+      const manager = new THREE.LoadingManager(onLoaded);
+      manager.onProgress = (item, loaded, total) => { /* console.log(item, loaded, total); */ };
+
+      const loader = new THREE.OBJLoader(manager);
+      loader.load('https://assets.codepen.io/557388/1405+Plane_1.obj', obj => { object = obj; });
+    }
+
+    function setupAnimation(model, svgRefs) {
+      const { lineLength, lineWing, circlePh, svg } = svgRefs;
+      const scene = new Scene(model);
+      const plane = scene.modelGroup;
+
+      // Reveal canvas + UI bits
+      gsap.fromTo('canvas', { x: "50%", autoAlpha: 0 }, { duration: 1, x: "0%", autoAlpha: 1, onUpdate: scene.render });
+      gsap.to('.loading', { autoAlpha: 0, duration: 0.5 });
+      gsap.to('.scroll-cta', { opacity: 1, duration: 0.6, delay: 0.1 });
+      gsap.set(svg, { autoAlpha: 1 });
+
+      const tau = Math.PI * 2;
+      gsap.set(plane.rotation, { y: tau * -0.25 });
+      gsap.set(plane.position, { x: 80, y: -32, z: -60 });
+
+      scene.render();
+
+      const sectionDuration = 1;
+
+      // Split view transitions over blueprint block
+      gsap.fromTo(scene.views[1],
+        { height: 1, bottom: 0 },
+        {
+          height: 0, bottom: 1, ease: 'none',
+          scrollTrigger: { trigger: ".blueprint", scrub: true, start: "bottom bottom", end: "bottom top" }
+        });
+
+      gsap.fromTo(scene.views[1],
+        { height: 0, bottom: 0 },
+        {
+          height: 1, bottom: 0, ease: 'none',
+          scrollTrigger: { trigger: ".blueprint", scrub: true, start: "top bottom", end: "top top" }
+        });
+
+      // Parallax
+      gsap.to('.ground', {
+        y: "30%",
+        scrollTrigger: { trigger: ".ground-container", scrub: true, start: "top bottom", end: "bottom top" }
+      });
+      gsap.from('.clouds', {
+        y: "25%",
+        scrollTrigger: { trigger: ".ground-container", scrub: true, start: "top bottom", end: "bottom top" }
+      });
+
+      // SVG draw effects (manual)
+      if (lineLength) {
+        const len = parseFloat(lineLength.dataset.pathLength || '0');
+        gsap.fromTo(lineLength, { strokeDashoffset: len }, {
+          strokeDashoffset: 0,
+          scrollTrigger: { trigger: ".length", scrub: true, start: "top bottom", end: "top top" }
+        });
+        gsap.to(lineLength, {
+          opacity: 0, strokeDashoffset: len,
+          scrollTrigger: { trigger: ".length", scrub: true, start: "top top", end: "bottom top" }
+        });
+      }
+
+      if (lineWing) {
+        const len = parseFloat(lineWing.dataset.pathLength || '0');
+        gsap.fromTo(lineWing, { strokeDashoffset: len }, {
+          strokeDashoffset: 0,
+          scrollTrigger: { trigger: ".wingspan", scrub: true, start: "top 25%", end: "bottom 50%" }
+        });
+        gsap.to(lineWing, {
+          opacity: 0, strokeDashoffset: len,
+          scrollTrigger: { trigger: ".wingspan", scrub: true, start: "top top", end: "bottom top" }
+        });
+      }
+
+      if (circlePh) {
+        const len = parseFloat(circlePh.dataset.pathLength || '0');
+        gsap.fromTo(circlePh, { strokeDashoffset: len }, {
+          strokeDashoffset: 0,
+          scrollTrigger: { trigger: ".phalange", scrub: true, start: "top 50%", end: "bottom 100%" }
+        });
+        gsap.to(circlePh, {
+          opacity: 0, strokeDashoffset: len,
+          scrollTrigger: { trigger: ".phalange", scrub: true, start: "top top", end: "bottom top" }
+        });
+      }
+
+      // Master timeline for the plane
+      const tl = gsap.timeline({
+        onUpdate: scene.render,
+        scrollTrigger: {
+          trigger: ".content",
+          scrub: true,
+          start: "top top",
+          end: "bottom bottom"
+        },
+        defaults: { duration: sectionDuration, ease: "power2.inOut" }
+      });
+
+      let d = 0;
+      tl.to('.scroll-cta', { duration: 0.25, opacity: 0 }, d)
+        .to(plane.position, { x: -10, ease: 'power1.in' }, d);
+      d += sectionDuration;
+
+      tl.to(plane.rotation, { x: tau * 0.25, y: 0, z: -tau * 0.05, ease: 'power1.inOut' }, d)
+        .to(plane.position, { x: -40, y: 0, z: -60, ease: 'power1.inOut' }, d);
+      d += sectionDuration;
+
+      tl.to(plane.rotation, { x: tau * 0.25, y: 0, z: tau * 0.05, ease: 'power3.inOut' }, d)
+        .to(plane.position, { x: 40, y: 0, z: -60, ease: 'power2.inOut' }, d);
+      d += sectionDuration;
+
+      tl.to(plane.rotation, { x: tau * 0.20, y: 0, z: -tau * 0.10, ease: 'power3.inOut' }, d)
+        .to(plane.position, { x: -40, y: 0, z: -30, ease: 'power2.inOut' }, d);
+      d += sectionDuration;
+
+      tl.to(plane.rotation, { x: 0, z: 0, y: tau * 0.25 }, d)
+        .to(plane.position, { x: 0, y: -10, z: 50 }, d);
+      d += sectionDuration * 2;
+
+      tl.to(plane.rotation, { x: tau * 0.25, y: tau * 0.5, z: 0, ease: 'power4.inOut' }, d)
+        .to(plane.position, { z: 30, ease: 'power4.inOut' }, d);
+      d += sectionDuration;
+
+      tl.to(plane.rotation, { x: tau * 0.25, y: tau * 0.5, z: 0, ease: 'power4.inOut' }, d)
+        .to(plane.position, { z: 60, x: 30, ease: 'power4.inOut' }, d);
+      d += sectionDuration;
+
+      tl.to(plane.rotation, { x: tau * 0.35, y: tau * 0.75, z: tau * 0.60, ease: 'power4.inOut' }, d)
+        .to(plane.position, { z: 100, x: 20, y: 0, ease: 'power4.inOut' }, d);
+      d += sectionDuration;
+
+      tl.to(plane.rotation, { x: tau * 0.15, y: tau * 0.85, z: 0, ease: 'power1.in' }, d)
+        .to(plane.position, { z: -150, x: 0, y: 0, ease: 'power1.inOut' }, d);
+      d += sectionDuration;
+
+      tl.to(plane.rotation, { x: -tau * 0.05, y: tau, z: -tau * 0.10, ease: 'none' }, d)
+        .to(plane.position, { x: 0, y: 30, z: 320, ease: 'power1.in' }, d)
+        .to(scene.light.position, { x: 0, y: 0, z: 0 }, d);
+    }
+
+    // Kick off after libs load
+    window.addEventListener('load', loadModel);
+  </script>
+</body>
+
+</html>

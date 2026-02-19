@@ -1,0 +1,325 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Particles Cursor</title>
+
+  <!-- Script Add -->
+  <script src="./main.js"></script>
+
+  <style>
+    :root {
+      /* Put the particles CANVAS behind page content */
+      --pc-z: 0;
+      /* Global opacity for the effect */
+      --pc-opacity: 1;
+    }
+
+    html,
+    body {
+      height: 100%;
+    }
+
+    body {
+      margin: 0;
+      background: radial-gradient(1200px 800px at 70% 10%, rgba(180, 180, 255, .06), transparent),
+        linear-gradient(180deg, #0b0c10 0%, #0b0c10 40%, #0d1117 100%);
+      color: #e5e7eb;
+      font: 16px/1.5 system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      overflow-x: hidden;
+    }
+
+    /* The cursor canvas sits BEHIND the content */
+    .pc-canvas {
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      /* never block clicks */
+      z-index: var(--pc-z);
+      /* 0 by default -> behind content */
+      opacity: var(--pc-opacity);
+      display: block;
+      contain: strict;
+    }
+
+    /* Anything you want ABOVE the particles should have z-index > var(--pc-z) */
+    .content {
+      position: relative;
+      z-index: calc(var(--pc-z) + 1);
+      /* 1 by default */
+    }
+
+    /* Demo content */
+    .demo {
+      max-width: 920px;
+      margin: 0 auto;
+      padding: 0 24px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .demo h1 {
+      font-size: clamp(28px, 5vw, 60px);
+      line-height: 1.05;
+      margin: 0 0 10px;
+      letter-spacing: 15px;
+      color: #fff;
+      text-shadow:
+        0 0 10px #00f7ff,
+        /* cyan glow */
+        0 0 20px #00f7ff,
+
+    }
+
+
+    .demo p {
+      font-size: clamp(16px, 2.1vw, 19px);
+      color: #aeb7c2;
+    }
+
+    .cta {
+      display: inline-block;
+      padding: 10px 14px;
+      border-radius: 12px;
+      background: #111827;
+      color: #e5e7eb;
+      text-decoration: none;
+      font-weight: 600;
+      border: 1px solid rgba(255, 255, 255, .08);
+    }
+
+    .cta:hover {
+      filter: brightness(1.1);
+    }
+  </style>
+</head>
+
+<body>
+  <!-- PARTICLES canvas lives behind -->
+  <canvas id="particles-cursor" class="pc-canvas" aria-hidden="true"></canvas>
+
+  <!-- Your page content lives above -->
+  <main class="demo content">
+    <h1>Web Designs </h1>
+  </main>
+
+  <script>
+    (() => {
+      const prefersReduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      // ===== Utilities =========================================================
+      const clamp = (n, a, b) => Math.max(a, Math.min(b, n));
+      const rand = (a = 0, b = 1) => a + Math.random() * (b - a);
+
+      // ===== Particle Pool =====================================================
+      class Particle {
+        constructor() { this.reset(); }
+        reset() {
+          this.x = 0; this.y = 0; this.vx = 0; this.vy = 0;
+          this.life = 0; this.ttl = 0; this.size = 0; this.hue = 0; this.alpha = 0;
+        }
+      }
+
+      class Pool {
+        constructor(size) { this.items = Array.from({ length: size }, () => new Particle()); this.index = 0; }
+        next() { const p = this.items[this.index++ % this.items.length]; p.reset(); return p; }
+      }
+
+      // ===== System ============================================================
+      class ParticleCursor {
+        constructor(canvas, opts = {}) {
+          this.canvas = canvas || document.getElementById('particles-cursor') || this.#createCanvas();
+          this.ctx = this.canvas.getContext('2d', { alpha: true });
+          this.running = true;
+          this.pointer = { x: innerWidth / 2, y: innerHeight / 2, vx: 0, vy: 0, moved: false };
+          this.lastT = performance.now();
+          this.dpr = Math.max(1, Math.min(2.5, devicePixelRatio || 1)); // cap DPR for perf
+
+          const base = {
+            maxParticles: 1000,
+            density: 5,
+            gravity: 0.04,
+            drag: 0.985,
+            minSize: 1.2, maxSize: 3.2,
+            minTTL: 450, maxTTL: 900,
+            hueShiftSpeed: 0.06,
+            glow: 0.8,
+            trail: 120,
+            additive: true,
+            spawnOnIdle: !prefersReduced,
+          };
+          this.opt = Object.assign({}, base, opts);
+
+          this.pool = new Pool(this.opt.maxParticles);
+          this.alive = [];
+
+          this.#resize();
+          addEventListener('resize', () => this.#resize());
+          addEventListener('pointermove', e => this.#onMove(e));
+          addEventListener('pointerdown', e => this.#burst(e));
+          addEventListener('visibilitychange', () => this.#visChange());
+
+          this.#loop();
+        }
+
+        // ---- Public API ------------------------------------------------------
+        enable() { this.running = true; this.lastT = performance.now(); this.#loop(); this.canvas.style.opacity = '1'; }
+        disable() { this.running = false; this.canvas.style.opacity = '0'; }
+        setOptions(partial) { Object.assign(this.opt, partial || {}); }
+
+        // ---- Internals -------------------------------------------------------
+        #createCanvas() {
+          const c = document.createElement('canvas');
+          c.className = 'pc-canvas';
+          c.id = 'particles-cursor';
+          document.body.appendChild(c);
+          return c;
+        }
+
+        #resize() {
+          const { canvas, ctx, dpr } = this;
+          const w = Math.ceil(innerWidth * dpr);
+          const h = Math.ceil(innerHeight * dpr);
+          if (canvas.width !== w || canvas.height !== h) {
+            canvas.width = w; canvas.height = h;
+            canvas.style.width = '100vw';
+            canvas.style.height = '100vh';
+            ctx.setTransform(dpr, 0, 0, dpr, 0, 0); // draw in CSS pixels
+          }
+        }
+
+        #onMove(e) {
+          const x = e.clientX; const y = e.clientY;
+          this.pointer.vx = x - this.pointer.x;
+          this.pointer.vy = y - this.pointer.y;
+          this.pointer.x = x; this.pointer.y = y; this.pointer.moved = true;
+          this.#emit(this.opt.density);
+        }
+
+        #burst(e) {
+          const burstN = Math.round(this.opt.density * 5);
+          this.pointer.x = e.clientX; this.pointer.y = e.clientY;
+          for (let i = 0; i < burstN; i++) this.#spawn(this.pointer.x, this.pointer.y, true);
+        }
+
+        #visChange() { if (document.hidden) this.running = false; else this.enable(); }
+
+        #emit(n) {
+          const speed = Math.hypot(this.pointer.vx, this.pointer.vy);
+          const k = clamp(speed / 12, 0.5, 3);
+          const count = Math.min(n * k, 40);
+          for (let i = 0; i < count; i++) this.#spawn(this.pointer.x, this.pointer.y);
+        }
+
+        #spawn(x, y, burst = false) {
+          const p = this.pool.next();
+          const ang = rand(0, Math.PI * 2);
+          const spdBase = burst ? rand(1.2, 3) : rand(0.4, 1.4);
+          const vpx = this.pointer.vx * rand(0.02, 0.08);
+          const vpy = this.pointer.vy * rand(0.02, 0.08);
+          p.x = x; p.y = y;
+          p.vx = Math.cos(ang) * spdBase + vpx;
+          p.vy = Math.sin(ang) * spdBase + vpy - rand(0.2, 0.6);
+          p.size = rand(this.opt.minSize, this.opt.maxSize);
+          p.ttl = rand(this.opt.minTTL, this.opt.maxTTL);
+          p.life = 0;
+          p.hue = (performance.now() * this.opt.hueShiftSpeed + rand(-10, 10)) % 360;
+          p.alpha = 1;
+          if (this.alive.length < this.opt.maxParticles) this.alive.push(p);
+          else this.alive[(Math.random() * this.alive.length) | 0] = p;
+        }
+
+        #drawParticle(p) {
+          const { ctx } = this;
+          const r = p.size;
+          const g = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, r * 3);
+          const hue = p.hue;
+          const glow = clamp(this.opt.glow, 0, 1);
+          g.addColorStop(0, `hsla(${hue} 90% 70% / ${0.35 * glow})`);
+          g.addColorStop(0.2, `hsla(${hue} 100% 60% / ${0.25 * glow})`);
+          g.addColorStop(1, 'hsla(0 0% 0% / 0)');
+          ctx.fillStyle = g;
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, r * 3, 0, Math.PI * 2);
+          ctx.fill();
+
+          // bright core
+          ctx.fillStyle = `hsla(${hue} 90% 75% / ${p.alpha})`;
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, r, 0, Math.PI * 2);
+          ctx.fill();
+        }
+
+        #loop() {
+          if (!this.running) return;
+          const now = performance.now();
+          let dt = now - this.lastT; if (dt > 100) dt = 16;
+          this.lastT = now;
+
+          const { ctx, canvas, opt } = this;
+
+          // Motion blur trail / fade
+          const trail = clamp(opt.trail, 0, 600);
+          if (trail <= 0) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+          } else {
+            ctx.globalCompositeOperation = 'source-over';
+            ctx.globalAlpha = clamp(1 - (dt / trail), 0.7, 0.98);
+            ctx.fillStyle = '#000000';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.globalAlpha = 1;
+          }
+
+          ctx.globalCompositeOperation = opt.additive ? 'lighter' : 'source-over';
+
+          // Idle ambient spawn
+          if (!this.pointer.moved && opt.spawnOnIdle && Math.random() < 0.25) {
+            this.#spawn(innerWidth * Math.random(), innerHeight * Math.random());
+          }
+          this.pointer.moved = false;
+
+          // Physics step & draw
+          const g = this.opt.gravity * this.dpr * (prefersReduced ? 0 : 1);
+          const drag = this.opt.drag;
+          for (let i = this.alive.length - 1; i >= 0; i--) {
+            const p = this.alive[i];
+            p.life += dt; if (p.life >= p.ttl) { this.alive.splice(i, 1); continue; }
+            p.vx *= drag; p.vy = p.vy * drag + g * dt * 0.06;
+            p.x += p.vx; p.y += p.vy;
+            p.alpha = 1 - (p.life / p.ttl);
+            if (p.x < -20 || p.x > innerWidth + 20 || p.y > innerHeight + 20) {
+              this.alive.splice(i, 1); continue;
+            }
+            this.#drawParticle(p);
+          }
+
+          requestAnimationFrame(() => this.#loop());
+        }
+      }
+
+      // Boot with background-friendly z-order
+      const canvas = document.getElementById('particles-cursor');
+      const system = new ParticleCursor(canvas, {
+        density: 5,
+        trail: 120,
+        glow: 0.8,
+        maxParticles: 1200,
+      });
+
+      // Tiny API for runtime control
+      window.particlesCursor = {
+        enable: () => system.enable(),
+        disable: () => system.disable(),
+        setOptions: (o) => system.setOptions(o),
+      };
+    })();
+  </script>
+</body>
+
+</html>

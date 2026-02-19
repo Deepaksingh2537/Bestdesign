@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Janken Game (Scissors, Paper, Rock)</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://public.codepenassets.com/css/normalize-5.0.0.min.css">
+    <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css'>
+    <link rel="stylesheet" href="./style.css">
+    <script src="https://public.codepenassets.com/js/prefixfree-1.0.7.min.js"></script>
+
+    <!-- Script Add -->
+    <script src="./main.js"></script>
+
+    <style>
+        @import url("https://fonts.googleapis.com/css?family=Montserrat:400,400i,700");
+
+        div {
+            box-sizing: border-box;
+        }
+
+        #match_up {
+            font-family: "Montserrat", sans-serif;
+            background-color: #da63eb;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        #match_up:target>.choice-container {
+            opacity: 0;
+        }
+
+        #match_up:target>.choice-container>.choice>.blocker {
+            display: block;
+        }
+
+        #match_up:target>.animation-container {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        #match_up:target>.animation-container .player {
+            animation: player 520ms ease-in 1200ms forwards;
+        }
+
+        #match_up:target>.animation-container .computer {
+            animation: computer 520ms ease-in 1200ms forwards;
+        }
+
+        #match_up:target>.animation-container .match-text {
+            animation: match-text 250ms ease-in 1720ms forwards;
+        }
+
+        .title {
+            color: #ffffff;
+            font-size: 9vmin;
+            font-weight: bold;
+            text-align: center;
+            text-shadow: 0 0.5vmin 1.1vmin rgba(0, 0, 0, 0.3);
+            padding: 0;
+            margin: 0 5vmin 11vmin;
+        }
+
+        .choice-container {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            position: absolute;
+            top: 0;
+            left: 0;
+            transition: opacity 700ms ease-out;
+        }
+
+        .item-radio {
+            display: none;
+        }
+
+        #item_scissors:checked~.choice-container .choice .item[for=item_scissors] {
+            color: #1f1f1f;
+            background-color: #f6ff21;
+            box-shadow: 0 0 4vmin 2vmin #ffda5b;
+        }
+
+        #item_scissors:checked~.choice-container .select {
+            height: 15vmin;
+            line-height: 15vmin;
+            visibility: visible;
+            opacity: 1;
+        }
+
+        #item_scissors:checked~.animation-container .player[data-item=scissors],
+        #item_scissors:checked~.animation-container .match-text[data-item=scissors] {
+            display: block;
+        }
+
+        #item_paper:checked~.choice-container .choice .item[for=item_paper] {
+            color: #1f1f1f;
+            background-color: #f6ff21;
+            box-shadow: 0 0 4vmin 2vmin #ffda5b;
+        }
+
+        #item_paper:checked~.choice-container .select {
+            height: 15vmin;
+            line-height: 15vmin;
+            visibility: visible;
+            opacity: 1;
+        }
+
+        #item_paper:checked~.animation-container .player[data-item=paper],
+        #item_paper:checked~.animation-container .match-text[data-item=paper] {
+            display: block;
+        }
+
+        #item_rock:checked~.choice-container .choice .item[for=item_rock] {
+            color: #1f1f1f;
+            background-color: #f6ff21;
+            box-shadow: 0 0 4vmin 2vmin #ffda5b;
+        }
+
+        #item_rock:checked~.choice-container .select {
+            height: 15vmin;
+            line-height: 15vmin;
+            visibility: visible;
+            opacity: 1;
+        }
+
+        #item_rock:checked~.animation-container .player[data-item=rock],
+        #item_rock:checked~.animation-container .match-text[data-item=rock] {
+            display: block;
+        }
+
+        .choice {
+            width: 100%;
+            padding: 0 5vmin;
+            margin: 0 0 10vmin;
+            display: flex;
+            justify-content: space-evenly;
+        }
+
+        .choice .item {
+            color: #ffffff;
+            font-size: 12vmin;
+            background-color: #0068ff;
+            width: 25vmin;
+            height: 25vmin;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 1.5vmin;
+            box-sizing: border-box;
+            box-shadow: 0 0.75vmin 2.25vmin 0.5vmin rgba(0, 0, 0, 0.3);
+            transition: color 225ms ease-out, background-color 225ms ease-out, box-shadow 225ms ease-out;
+        }
+
+        .choice .item:hover {
+            background-color: #1a77ff;
+        }
+
+        .choice .item:focus,
+        .choice .item:active {
+            background-color: #005ee6;
+        }
+
+        .blocker {
+            background-color: transparent;
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            display: none;
+        }
+
+        .select {
+            color: #0d6600;
+            font-family: inherit;
+            font-size: 5vmin;
+            font-weight: bold;
+            text-align: center;
+            text-decoration: none;
+            background-color: #74eb63;
+            width: 40vmin;
+            padding: 0;
+            border: 0;
+            margin: 0;
+            outline: 0;
+            display: block;
+            visibility: hidden;
+            opacity: 0;
+            border-radius: 2.5vmin;
+            box-shadow: 0 0.75vmin 2.5vmin rgba(0, 0, 0, 0.5);
+            box-sizing: border-box;
+            transition: background-color 150ms ease-out, opacity 150ms ease-out, box-shadow 150ms ease-out, transform 150ms ease-out;
+        }
+
+        .select:hover {
+            background-color: #88ee7a;
+        }
+
+        .select:focus,
+        .select:active {
+            background-color: #60e84c;
+        }
+
+        .select:active {
+            box-shadow: 0 0 0 rgba(0, 0, 0, 0.5);
+            transform: translateY(0.75vmin);
+        }
+
+        .animation-container {
+            width: 100%;
+            height: 100%;
+            padding: 0 10vmin;
+            display: flex;
+            align-items: center;
+            justify-content: space-evenly;
+            position: absolute;
+            top: 0;
+            left: 0;
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .player,
+        .match-text {
+            display: none;
+        }
+
+        .player,
+        .computer {
+            color: #ffffff;
+            font-size: 25vmin;
+            text-shadow: 0 0.5vmin 1.1vmin rgba(0, 0, 0, 0.3);
+            opacity: 0;
+        }
+
+        @keyframes player {
+            0% {
+                opacity: 0;
+                transform: scaleX(-1) rotate(0deg);
+            }
+
+            100% {
+                opacity: 1;
+                transform: scaleX(-1) rotate(-45deg);
+            }
+        }
+
+        @keyframes computer {
+            0% {
+                opacity: 0;
+                transform: rotate(0deg);
+            }
+
+            100% {
+                opacity: 1;
+                transform: rotate(-45deg);
+            }
+        }
+
+        .match-text {
+            color: #ffffff;
+            font-size: 9vmin;
+            font-weight: bold;
+            text-align: center;
+            text-shadow: 0 0.5vmin 1.1vmin rgba(0, 0, 0, 0.3);
+            width: 100%;
+            padding: 0 15vmin;
+            position: absolute;
+            top: 50%;
+            left: 0;
+            opacity: 0;
+            transform: translateY(21vmin);
+        }
+
+        .match-text span,
+        .match-text small {
+            display: block;
+        }
+
+        .match-text small {
+            font-size: 4.5vmin;
+            font-weight: normal;
+            margin-top: 5vmin;
+        }
+
+        @keyframes match-text {
+            0% {
+                opacity: 0;
+            }
+
+            100% {
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- partial:index.partial.html -->
+    <form id="match_up">
+        <input class="item-radio" type="radio" name="item" id="item_scissors" />
+        <input class="item-radio" type="radio" name="item" id="item_paper" />
+        <input class="item-radio" type="radio" name="item" id="item_rock" />
+        <div class="choice-container">
+            <div class="title">Janken Game</div>
+            <div class="choice">
+                <label class="item" for="item_scissors"><i class="far fa-hand-scissors"></i></label>
+                <label class="item" for="item_paper"><i class="far fa-hand-paper"></i></label>
+                <label class="item" for="item_rock"><i class="far fa-hand-rock"></i></label>
+                <div class="blocker"></div>
+            </div><a class="select" href="#match_up">SELECT</a>
+        </div>
+        <div class="animation-container">
+            <div class="player" data-item="scissors"><i class="far fa-hand-scissors"></i></div>
+            <div class="match-text" data-item="scissors"><span>It is a draw!</span><small>Refresh the page to reset
+                    :)</small></div>
+            <div class="player" data-item="paper"><i class="far fa-hand-paper"></i></div>
+            <div class="match-text" data-item="paper"><span>You lost the match!</span><small>Refresh the page to reset
+                    :)</small></div>
+            <div class="player" data-item="rock"><i class="far fa-hand-rock"></i></div>
+            <div class="match-text" data-item="rock"><span>You won the match!</span><small>Refresh the page to reset
+                    :)</small></div>
+            <div class="computer"><i class="far fa-hand-scissors"></i></div>
+        </div>
+    </form>
+    <!-- partial -->
+    <script>
+        ////////////////////////////////////////
+        ////////// NOTHING TO DO HERE //////////
+        ////////////////////////////////////////
+    </script>
+
+</body>
+
+</html>

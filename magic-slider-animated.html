@@ -1,0 +1,594 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Magic Slider — 3D Coverflow + Parallax</title>
+
+    <!-- Script Add -->
+    <script src="./main.js"></script>
+
+    <style>
+        /* ===== Base / Theme ===== */
+        :root {
+            --bg: radial-gradient(1200px 600px at 10% -10%, #1f1b2e 10%, #0f0d17 40%),
+                radial-gradient(800px 400px at 110% 110%, #251a41 10%, transparent 55%),
+                linear-gradient(180deg, #0c0b12, #0c0b12);
+            --card-radius: 22px;
+            --glow: 0 12px 40px rgba(140, 100, 255, .35);
+            --accent: #8b5cf6;
+            /* purple */
+            --accent-2: #22d3ee;
+            /* cyan */
+            --text: #e7e1ff;
+            --muted: #bfb7e6;
+            --border: rgba(255, 255, 255, .12);
+            --track-w: min(1100px, 94vw);
+            --h: clamp(360px, 70vh, 720px);
+            --transition: 900ms cubic-bezier(.22, 1, .36, 1);
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            :root {
+                --transition: 10ms linear;
+            }
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            height: 100%;
+        }
+
+        body {
+            margin: 0;
+            font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji";
+            color: var(--text);
+            background: var(--bg);
+            overflow-x: hidden;
+        }
+
+        /* ===== Carousel Layout ===== */
+        .carousel {
+            width: 100%;
+            display: grid;
+            place-items: center;
+            padding: 6vh 0 10vh;
+        }
+
+        .viewport {
+            position: relative;
+            width: var(--track-w);
+            height: var(--h);
+            perspective: 1400px;
+            isolation: isolate;
+        }
+
+        .track {
+            position: absolute;
+            inset: 0;
+            display: grid;
+            place-items: center;
+            transform-style: preserve-3d;
+        }
+
+        /* ===== Slide Card ===== */
+        .slide {
+            position: absolute;
+            width: min(92%, 82ch);
+            aspect-ratio: 16/9;
+            border-radius: var(--card-radius);
+            overflow: clip;
+            box-shadow: var(--glow);
+            border: 1px solid var(--border);
+            transform-origin: 50% 50%;
+            backface-visibility: hidden;
+            transition: transform var(--transition), filter 300ms ease, box-shadow 300ms ease;
+            will-change: transform;
+        }
+
+        .slide:focus {
+            outline: 3px solid color-mix(in oklab, var(--accent) 70%, white);
+            outline-offset: 2px;
+        }
+
+        .slide:not(.is-active) {
+            filter: saturate(.85) contrast(.95) brightness(.9);
+        }
+
+        .media,
+        .overlay {
+            position: absolute;
+            inset: 0;
+        }
+
+        .media {
+            z-index: 0;
+        }
+
+        .media img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            transform: translate3d(calc(var(--px, 0) * 6px), calc(var(--py, 0) * 6px), 0) scale(1.03);
+            transition: transform 120ms linear;
+        }
+
+        .overlay {
+            background: linear-gradient(180deg, rgba(6, 5, 9, .15), rgba(6, 5, 9, .55) 55%, rgba(6, 5, 9, .9));
+            box-shadow: inset 0 -60px 150px rgba(0, 0, 0, .45);
+        }
+
+        .content {
+            position: absolute;
+            inset: auto 0 0 0;
+            padding: clamp(16px, 3vw, 28px);
+            z-index: 2;
+        }
+
+        .eyebrow {
+            letter-spacing: .2em;
+            text-transform: uppercase;
+            font-size: .72rem;
+            color: color-mix(in srgb, var(--muted) 85%, white);
+        }
+
+        .title {
+            margin: 6px 0 8px;
+            font-size: clamp(22px, 4.4vw, 40px);
+            line-height: 1.08;
+            letter-spacing: .3px;
+            color: #fff;
+        }
+
+        .desc {
+            margin: 0 0 16px;
+            color: var(--muted);
+            max-width: 60ch;
+        }
+
+        .cta {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 14px;
+            border-radius: 999px;
+            border: 1px solid var(--border);
+            background: rgba(255, 255, 255, .04);
+            -webkit-backdrop-filter: blur(6px);
+            backdrop-filter: blur(6px);
+            color: var(--text);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .cta svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        /* ===== Nav / Dots ===== */
+        .nav {
+            position: absolute;
+            top: 50%;
+            translate: 0 -50%;
+            z-index: 5;
+            width: 44px;
+            height: 44px;
+            border-radius: 999px;
+            display: grid;
+            place-items: center;
+            border: 1px solid var(--border);
+            background: rgba(255, 255, 255, .06);
+            -webkit-backdrop-filter: blur(6px);
+            backdrop-filter: blur(6px);
+            cursor: pointer;
+            color: var(--text);
+        }
+
+        .nav:hover {
+            box-shadow: 0 0 0 3px rgba(139, 92, 246, .25);
+        }
+
+        .nav.prev {
+            left: -18px;
+        }
+
+        .nav.next {
+            right: -18px;
+        }
+
+        .nav svg {
+            width: 22px;
+            height: 22px;
+        }
+
+        .dots {
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: -42px;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            z-index: 3;
+        }
+
+        .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 999px;
+            border: 1px solid var(--border);
+            background: rgba(255, 255, 255, .22);
+            cursor: pointer;
+        }
+
+        .dot[aria-selected="true"] {
+            background: var(--accent);
+            box-shadow: 0 0 0 4px rgba(139, 92, 246, .15);
+        }
+
+        /* ===== Progress / Controls ===== */
+        .controls {
+            position: absolute;
+            inset: auto 0 -72px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 18px;
+            color: var(--muted);
+        }
+
+        .progress {
+            position: relative;
+            width: min(420px, 70vw);
+            height: 4px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, .12);
+            overflow: hidden;
+        }
+
+        .bar {
+            position: absolute;
+            inset: 0;
+            width: 0%;
+            background: linear-gradient(90deg, var(--accent), var(--accent-2));
+        }
+
+        .toggle {
+            appearance: none;
+            border: 1px solid var(--border);
+            color: var(--text);
+            background: rgba(255, 255, 255, .06);
+            border-radius: 999px;
+            padding: 8px 12px;
+            cursor: pointer;
+        }
+
+        /* ===== Footer badge (optional) ===== */
+        .brand {
+            position: fixed;
+            z-index: 10;
+            right: 16px;
+            bottom: 14px;
+            opacity: .85;
+            font-size: 12px;
+            color: var(--muted);
+        }
+
+        .brand a {
+            color: var(--accent-2);
+            text-decoration: none;
+        }
+
+        /* ===== Responsive tweaks ===== */
+        @media (max-width: 540px) {
+            .nav.prev {
+                left: -8px;
+            }
+
+            .nav.next {
+                right: -8px;
+            }
+
+            .cta {
+                padding: 8px 12px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="carousel" aria-roledescription="carousel" aria-label="Magic Slider" aria-live="polite">
+        <div class="viewport" id="viewport">
+            <div class="track" id="track">
+                <!-- Slide 1 -->
+                <article class="slide is-active" role="group" aria-label="Slide 1 of 5" tabindex="0">
+                    <div class="media">
+                        <img alt="Aurora sky over mountain lake" loading="lazy"
+                            src="https://images.unsplash.com/photo-1501785888041-af3ef285b470?q=80&w=1600&auto=format&fit=crop" />
+                    </div>
+                    <div class="overlay" aria-hidden="true"></div>
+                    <div class="content">
+                        <div class="eyebrow">Discover</div>
+                        <h2 class="title">Breathe in the Northern Lights</h2>
+                        <p class="desc">A glassy lake, a hush of pines, and ribbons of color that refuse to sit still.
+                            Let your next hero shot glow.</p>
+                        <a class="cta" href="#" aria-label="Explore the Aurora collection">Explore
+                            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M5 12h14M13 5l7 7-7 7" stroke="currentColor" stroke-width="1.8"
+                                    stroke-linecap="round" stroke-linejoin="round" />
+                            </svg>
+                        </a>
+                    </div>
+                </article>
+
+                <!-- Slide 2 -->
+                <article class="slide" role="group" aria-label="Slide 2 of 5" tabindex="-1">
+                    <div class="media">
+                        <img alt="Abstract neon city at night" loading="lazy"
+                            src="https://images.unsplash.com/photo-1508057198894-247b23fe5ade?q=80&w=1600&auto=format&fit=crop" />
+                    </div>
+                    <div class="overlay" aria-hidden="true"></div>
+                    <div class="content">
+                        <div class="eyebrow">Create</div>
+                        <h2 class="title">Neon Dreams &amp; City Beats</h2>
+                        <p class="desc">Turn motion into emotion with a palette of chrome and candy. Your story, but
+                            louder.</p>
+                        <a class="cta" href="#">Build your look
+                            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M5 12h14M13 5l7 7-7 7" stroke="currentColor" stroke-width="1.8"
+                                    stroke-linecap="round" stroke-linejoin="round" />
+                            </svg>
+                        </a>
+                    </div>
+                </article>
+
+                <!-- Slide 3 -->
+                <article class="slide" role="group" aria-label="Slide 3 of 5" tabindex="-1">
+                    <div class="media">
+                        <img alt="Desert dunes at golden hour" loading="lazy"
+                            src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?q=80&w=1600&auto=format&fit=crop" />
+                    </div>
+                    <div class="overlay" aria-hidden="true"></div>
+                    <div class="content">
+                        <div class="eyebrow">Escape</div>
+                        <h2 class="title">Lines in the Sand</h2>
+                        <p class="desc">Sculpted by wind, painted by light. Minimalism with miles of texture.</p>
+                        <a class="cta" href="#">See the dunes
+                            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M5 12h14M13 5l7 7-7 7" stroke="currentColor" stroke-width="1.8"
+                                    stroke-linecap="round" stroke-linejoin="round" />
+                            </svg>
+                        </a>
+                    </div>
+                </article>
+
+                <!-- Slide 4 -->
+                <article class="slide" role="group" aria-label="Slide 4 of 5" tabindex="-1">
+                    <div class="media">
+                        <img alt="Foggy forest with tall pines" loading="lazy"
+                            src="https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?q=80&w=1600&auto=format&fit=crop" />
+                    </div>
+                    <div class="overlay" aria-hidden="true"></div>
+                    <div class="content">
+                        <div class="eyebrow">Focus</div>
+                        <h2 class="title">Where the Quiet Grows</h2>
+                        <p class="desc">Sink into the greens and find the frame between the fog. Slow is a superpower.
+                        </p>
+                        <a class="cta" href="#">Go green
+                            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M5 12h14M13 5l7 7-7 7" stroke="currentColor" stroke-width="1.8"
+                                    stroke-linecap="round" stroke-linejoin="round" />
+                            </svg>
+                        </a>
+                    </div>
+                </article>
+
+                <!-- Slide 5 -->
+                <article class="slide" role="group" aria-label="Slide 5 of 5" tabindex="-1">
+                    <div class="media">
+                        <img alt="Ocean wave curling at sunrise" loading="lazy"
+                            src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=1600&auto=format&fit=crop" />
+                    </div>
+                    <div class="overlay" aria-hidden="true"></div>
+                    <div class="content">
+                        <div class="eyebrow">Flow</div>
+                        <h2 class="title">Catch the First Light</h2>
+                        <p class="desc">Water writes in curves. Learn the language and ride the line.</p>
+                        <a class="cta" href="#">Find your flow
+                            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M5 12h14M13 5l7 7-7 7" stroke="currentColor" stroke-width="1.8"
+                                    stroke-linecap="round" stroke-linejoin="round" />
+                            </svg>
+                        </a>
+                    </div>
+                </article>
+            </div>
+
+            <!-- Navigation -->
+            <button class="nav prev" id="prev" aria-label="Previous slide" title="Previous">
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M19 12H5m6-7l-7 7 7 7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+                        stroke-linejoin="round" />
+                </svg>
+            </button>
+            <button class="nav next" id="next" aria-label="Next slide" title="Next">
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M5 12h14m-6-7l7 7-7 7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+                        stroke-linejoin="round" />
+                </svg>
+            </button>
+
+            <!-- Dots + Progress + Autoplay toggle -->
+            <div class="dots" id="dots" role="tablist" aria-label="Slide navigation"></div>
+            <div class="controls">
+                <button class="toggle" id="toggle" aria-pressed="true" title="Pause/Play autoplay">⏯︎ Autoplay</button>
+                <div class="progress" aria-hidden="true">
+                    <div class="bar" id="bar"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        (function () {
+            const viewport = document.getElementById('viewport');
+            const track = document.getElementById('track');
+            const slides = Array.from(track.querySelectorAll('.slide'));
+            const prevBtn = document.getElementById('prev');
+            const nextBtn = document.getElementById('next');
+            const dotsWrap = document.getElementById('dots');
+            const bar = document.getElementById('bar');
+            const toggle = document.getElementById('toggle');
+
+            let current = 0;
+            let auto = true;
+            const DURATION = 4500; // autoplay ms
+            let progressTimer = null;
+            let visibilityPaused = false;
+
+            // Create dots
+            slides.forEach((_, i) => {
+                const b = document.createElement('button');
+                b.className = 'dot';
+                b.setAttribute('role', 'tab');
+                b.setAttribute('aria-label', `Go to slide ${i + 1}`);
+                b.addEventListener('click', () => goTo(i));
+                dotsWrap.appendChild(b);
+            });
+
+            function updateDots() {
+                const dots = dotsWrap.querySelectorAll('.dot');
+                dots.forEach((d, i) => {
+                    d.setAttribute('aria-selected', i === current ? 'true' : 'false');
+                });
+            }
+
+            // Set 3D positions relative to current
+            function layout() {
+                const N = slides.length;
+                slides.forEach((el, i) => {
+                    let rel = i - current; // distance from active
+                    if (rel > N / 2) rel -= N; // wrap to nearest side
+                    if (rel < -N / 2) rel += N;
+                    const depth = -Math.abs(rel) * 140; // Z push
+                    const shift = rel * 44;            // X shift in %
+                    const rot = rel * -16;             // Y rotation
+                    const scale = 1 - Math.min(Math.abs(rel) * 0.08, 0.5);
+                    el.style.transform = `translate3d(${shift}%, 0, ${depth}px) rotateY(${rot}deg) scale(${scale})`;
+                    el.style.zIndex = String(100 - Math.abs(rel));
+                    el.classList.toggle('is-active', rel === 0);
+                    el.setAttribute('aria-hidden', rel === 0 ? 'false' : 'true');
+                    el.tabIndex = (rel === 0) ? 0 : -1;
+                });
+                updateDots();
+            }
+
+            function goTo(i, rush = false) {
+                current = (i % slides.length + slides.length) % slides.length;
+                layout();
+                restartProgress(rush);
+            }
+
+            function prev() { goTo(current - 1); }
+            function next() { goTo(current + 1); }
+
+            // Progress bar + autoplay
+            function restartProgress(rush) {
+                if (!auto) return;
+                clearTimeout(progressTimer);
+                bar.style.transition = 'none';
+                bar.style.width = '0%';
+                // force reflow
+                void bar.offsetWidth;
+                const dur = rush ? 400 : DURATION;
+                bar.style.transition = `width ${dur}ms linear`;
+                bar.style.width = '100%';
+                progressTimer = setTimeout(() => { next(); }, dur);
+            }
+
+            function pauseAuto() {
+                if (!auto) return;
+                auto = false; toggle.setAttribute('aria-pressed', 'false');
+                bar.style.transition = 'none'; bar.style.width = '0%';
+                clearTimeout(progressTimer);
+            }
+            function playAuto() {
+                if (auto) return;
+                auto = true; toggle.setAttribute('aria-pressed', 'true');
+                restartProgress();
+            }
+
+            // Controls
+            prevBtn.addEventListener('click', () => { pauseAuto(); prev(); });
+            nextBtn.addEventListener('click', () => { pauseAuto(); next(); });
+            toggle.addEventListener('click', () => auto ? pauseAuto() : playAuto());
+
+            // Keyboard
+            window.addEventListener('keydown', (e) => {
+                if (e.key === 'ArrowLeft') { pauseAuto(); prev(); }
+                if (e.key === 'ArrowRight') { pauseAuto(); next(); }
+            });
+
+            // Hover/focus pause
+            viewport.addEventListener('mouseenter', pauseAuto);
+            viewport.addEventListener('mouseleave', () => { if (!visibilityPaused) playAuto(); });
+            viewport.addEventListener('focusin', pauseAuto);
+            viewport.addEventListener('focusout', () => { if (!visibilityPaused) playAuto(); });
+
+            // Pause when tab hidden
+            document.addEventListener('visibilitychange', () => {
+                if (document.hidden) { visibilityPaused = true; pauseAuto(); }
+                else { visibilityPaused = false; playAuto(); }
+            });
+
+            // Pointer parallax
+            viewport.addEventListener('pointermove', (e) => {
+                const rect = viewport.getBoundingClientRect();
+                const x = ((e.clientX - rect.left) / rect.width) * 2 - 1; // -1..1
+                const y = ((e.clientY - rect.top) / rect.height) * 2 - 1;
+                slides.forEach(s => {
+                    s.style.setProperty('--px', x.toFixed(3));
+                    s.style.setProperty('--py', y.toFixed(3));
+                });
+            });
+            viewport.addEventListener('pointerleave', () => {
+                slides.forEach(s => { s.style.setProperty('--px', 0); s.style.setProperty('--py', 0); });
+            });
+
+            // Drag / Swipe
+            let dragX = 0, startX = 0, dragging = false;
+            const THRESH = 60; // px to trigger
+
+            function onDown(e) { dragging = true; startX = (e.touches ? e.touches[0].clientX : e.clientX); dragX = 0; pauseAuto(); }
+            function onMove(e) {
+                if (!dragging) return; const x = (e.touches ? e.touches[0].clientX : e.clientX); dragX = x - startX; const pct = Math.max(-1, Math.min(1, dragX / (viewport.clientWidth * 0.75))); // -1..1
+                // apply a subtle follow transform to all slides
+                slides.forEach((el, i) => {
+                    const computed = getComputedStyle(el).transform;
+                    el.style.transform = computed + ` translateX(${pct * 6}%)`;
+                });
+            }
+            function onUp() { if (!dragging) return; dragging = false; if (Math.abs(dragX) > THRESH) { dragX < 0 ? next() : prev(); } else { layout(); playAuto(); } }
+
+            viewport.addEventListener('mousedown', onDown);
+            viewport.addEventListener('touchstart', onDown, { passive: true });
+            window.addEventListener('mousemove', onMove);
+            window.addEventListener('touchmove', onMove, { passive: true });
+            window.addEventListener('mouseup', onUp);
+            window.addEventListener('touchend', onUp);
+
+            // Init
+            layout();
+            restartProgress();
+        })();
+    </script>
+</body>
+
+</html>

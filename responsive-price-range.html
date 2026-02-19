@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Price Range</title>
+    <link rel="stylesheet" href="style.css">
+
+    <!-- Script Add -->
+    <script src="./main.js"></script>
+
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&amp;display=swap">
+
+    <style>
+        :root {
+            --h: 222;
+            --s: 20%;
+            --fg: hsl(var(--h), var(--s), 95%);
+            --bg: hsl(var(--h), var(--s), 20%);
+            --tint: hsl(180, 85%, 60%);
+            --tint2: hsl(210, 85%, 60%);
+            --bor: #3b3d4c;
+        }
+
+        #app {
+            grid-template-columns: 1fr;
+        }
+
+        #app .rangeSlider.pips {
+            --range: var(--tint);
+            --rangebg: #3b3d4b;
+            background: var(--rangebg);
+            margin: 6.5em 5px 2em;
+        }
+
+        #app .rangeSlider.pips:after {
+            content: "";
+            height: 5px;
+            border-radius: 5px;
+            background: inherit;
+            width: calc(100% + 1em);
+            position: absolute;
+            bottom: 0;
+            left: -.5em;
+        }
+
+        #app .rangeSlider,
+        #app .rangeSlider .rangeBar {
+            height: 5px;
+        }
+
+        #app .rangeSlider .rangePips {
+            bottom: 5px;
+        }
+
+        #app .rangeSlider .pip {
+            width: 3px;
+            min-height: 10px;
+            top: auto;
+            bottom: 0;
+            translate: -1px 0;
+            background-color: var(--rangebg);
+            background-image: linear-gradient(0deg, transparent 20px, rgba(255, 255, 255, 0.2) 50px);
+            animation: pipIn .5s cubic-bezier(0.36, 1.35, 0.48, 1.02) both 0.2s;
+            transition: all .5s ease;
+            opacity: 0.8;
+            transform-origin: bottom center;
+            border-radius: 10px 10px 0 0;
+        }
+
+        #app .rangeSlider .pip {
+            width: 1px;
+        }
+
+        @media screen and (min-width: 500px) {
+            #app .rangeSlider .pip {
+                width: 3px;
+                translate: -1.5px 0;
+            }
+        }
+
+        @media screen and (min-width: 800px) {
+            #app .rangeSlider .pip {
+                width: 4px;
+                translate: -2px 0;
+            }
+        }
+
+        #app .rangeSlider .pip.in-range,
+        #app .rangeSlider .pip.selected {
+            background-color: var(--range);
+            background-image: linear-gradient(0deg, transparent 20px, var(--tint2) 70px);
+            animation-delay: 0s;
+        }
+
+        #app .rangeSlider .rangeHandle {
+            width: 19px;
+            height: 19px;
+        }
+
+        #app .rangeSlider .rangeHandle .rangeNub {
+            background: var(--range);
+        }
+
+        #app .rangeSlider:not(.focus) .rangeHandle .rangeNub {
+            background: var(--bg);
+        }
+
+        #app .rangeSlider.range:not(.min):not(.max) .rangeNub {
+            border-radius: 100%;
+            box-shadow: inset 0 0 0 4px white;
+        }
+
+        #app .rangeFloat {
+            background: white;
+            color: var(--bg);
+            border-radius: 5px;
+            padding: 0.4em .6em 0.3em;
+            top: -0.5em
+        }
+
+        fieldset {
+            width: auto;
+            min-width: none;
+        }
+
+        .prices {
+            min-height: 5px;
+            margin: 6.5em 5px 2em;
+        }
+
+        .fields {
+            display: grid;
+            grid-template-columns: 1fr;
+            grid-gap: 10px;
+        }
+
+        @media screen and (min-width: 500px) {
+            .fields {
+                grid-template-columns: 1fr 24px 1fr;
+            }
+        }
+
+        .fields hr {
+            width: 100%;
+            height: 1px;
+            background: var(--bor);
+            border: none;
+            justify-self: center;
+            align-self: end;
+            margin: 0 0 23px;
+            display: none;
+        }
+
+        @media screen and (min-width: 500px) {
+            .fields hr {
+                display: block;
+            }
+        }
+
+        .ui {
+            background: #12131a;
+            border-color: transparent;
+            box-shadow: rgb(0 0 0 / 15%) 0px 14px 28px, rgb(0 0 0 / 12%) 0px 10px 10px;
+            border-radius: 10px;
+            padding: clamp(20px, 5vw, 50px) clamp(20px, 6vw, 80px);
+            color: #696c80;
+        }
+
+        #app {
+            width: min(720px, 95%);
+        }
+
+        h1 {
+            font-size: 1.8rem;
+            font-weight: 300;
+            margin: 0 0 1rem;
+            color: white;
+        }
+
+        header {
+            color: inherit;
+        }
+
+        input,
+        select,
+        button,
+        textarea {
+            border: 1px solid var(--bor);
+            border-radius: 4px;
+            background: transparent;
+            width: 100%;
+        }
+
+        .ui .field {
+            margin: 0;
+            display: grid;
+            grid-template-rows: auto 1fr;
+        }
+
+        .ui .field:after {
+            content: "$";
+            grid-row: 2;
+            grid-column: 1;
+            justify-self: flex-end;
+            align-self: center;
+            text-align: center;
+            width: 2.5em;
+            height: 2em;
+            line-height: 2em;
+            border-left: 1px solid var(--bor);
+        }
+
+        .ui .field input {
+            color: #fff;
+            padding-left: 8px;
+            grid-row: 2;
+            grid-column: 1;
+            -moz-appearance: textfield;
+        }
+
+        .ui .field input::-webkit-outer-spin-button,
+        .ui .field input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+        }
+
+        label {
+            color: white;
+            text-transform: none;
+        }
+
+        body,
+        html {
+            height: 100%;
+        }
+
+        body {
+            --font: "Manrope", sans-serif;
+            background: #3b3d4c;
+            font-family: var(--font);
+            font-weight: 300;
+            display: grid;
+            color: var(--fg);
+            place-items: start;
+        }
+
+        @media screen and (min-width: 500px) {
+            body {
+                place-items: center;
+            }
+        }
+
+        body * {
+            font-family: var(--font);
+        }
+
+        a {
+            color: var(--tint);
+            text-decoration: none;
+        }
+
+        #app> :not(.ui) * {
+            text-shadow: 0 2px 1px rgba(0, 0, 0, 0.4);
+        }
+
+        @keyframes pipIn {
+            0% {
+                scale: 1 0;
+            }
+
+            100% {
+                scale: 1 1;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <main id=app>
+        <fieldset class="ui">
+
+            <header>
+                <h1>Price Range</h1>
+                <p>The average nightly price is $499</p>
+            </header>
+
+            <section class="prices">
+                <div id="slider">
+                </div>
+            </section>
+
+            <section class="fields">
+                <div class="field">
+                    <label for="name">Min Price</label>
+                    <input type="number" id="min" name="min" placeholder="0" value=20>
+                </div>
+                <hr style="margin-left: 12px;">
+                <div class="field">
+                    <label for="name">Max Price</label>
+                    <input type="number" id="max" name="max" placeholder="0" value=50>
+                </div>
+            </section>
+
+        </fieldset>
+    </main>
+    <script src="https://cdn.jsdelivr.net/npm/svelte-range-slider-pips@2.0.1/dist/svelte-range-slider-pips.js"></script>
+    <script>
+        const $slider = document.getElementById("slider");
+        const $min = document.querySelector("#min");
+        const $max = document.querySelector("#max");
+
+        let slider = new RangeSliderPips({
+            target: $slider,
+            props: {
+                min: 0,
+                max: 70,
+                values: [20, 50],
+                pips: true,
+                pipstep: 1,
+                float: true,
+                range: true,
+                prefix: "$ ",
+                pushy: true,
+                handleFormatter: (v) => {
+                    return v;
+                }
+            }
+        });
+
+        slider.$on('change', function (e) {
+            $min.value = e.detail.values[0];
+            $max.value = e.detail.values[1];
+        });
+
+        document.querySelectorAll(".rangePips .pip").forEach((i) => {
+            i.style.height = `${Math.floor(Math.random() * 75)}px`;
+        });
+
+        $min.addEventListener("change", (e) => {
+            slider.$set({ values: [$min.value, $max.value] });
+        });
+        $max.addEventListener("change", (e) => {
+            slider.$set({ values: [$min.value, $max.value] });
+        });
+    </script>
+</body>
+
+</html>

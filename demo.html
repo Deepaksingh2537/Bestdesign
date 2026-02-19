@@ -1,0 +1,59 @@
+<aside class="rakije-filters">
+  <div class="rakije-filter-title">
+    <span class="rakije-filter-icon">⚲</span>
+    <strong>
+      <?php echo esc_html__('Filters', 'catalog-archive'); ?>
+    </strong>
+  </div>
+
+  <label class="rakije-label">
+    <?php echo esc_html__('Brandy Type', 'catalog-archive'); ?>
+  </label>
+  <select class="rakije-select" name="brandy_type">
+    <option value="">
+      <?php echo esc_html__('All Types', 'catalog-archive'); ?>
+    </option>
+    <?php if (!is_wp_error($types) && !empty($types)) : ?>
+    <?php foreach ($types as $t) : ?>
+    <option value="<?php echo esc_attr($t->slug); ?>">
+      <?php echo esc_html($t->name); ?>
+    </option>
+    <?php endforeach; ?>
+    <?php endif; ?>
+  </select>
+
+  <label class="rakije-label">
+    <?php echo esc_html__('Region', 'catalog-archive'); ?>
+  </label>
+  <select class="rakije-select" name="region">
+    <option value="">
+      <?php echo esc_html__('All Regions', 'catalog-archive'); ?>
+    </option>
+    <?php if (!is_wp_error($regions) && !empty($regions)) : ?>
+    <?php foreach ($regions as $r) : ?>
+    <option value="<?php echo esc_attr($r->slug); ?>">
+      <?php echo esc_html($r->name); ?>
+    </option>
+    <?php endforeach; ?>
+    <?php endif; ?>
+  </select>
+
+  <label class="rakije-label">
+    <?php echo esc_html__('Distillery', 'catalog-archive'); ?>
+  </label>
+  <select class="rakije-select" name="distillery">
+    <option value="">
+      <?php echo esc_html__('All Distilleries', 'catalog-archive'); ?>
+    </option>
+    <?php foreach ($distilleries as $d) : ?>
+    <option value="<?php echo esc_attr($d->ID); ?>">
+      <?php echo esc_html(get_the_title($d->ID)); ?>
+    </option>
+    <?php endforeach; ?>
+  </select>
+
+  <button type="button" class="rakije-reset">
+    ↻
+    <?php echo esc_html__('Reset Filters', 'catalog-archive'); ?>
+  </button>
+</aside>

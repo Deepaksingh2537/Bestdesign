@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Circular Swiper Gallery</title>
+
+      <!-- Script Add -->
+  <script src="./main.js"></script>
+  
+    <style>
+        :root {
+            /* Responsive sizing driven by the shortest viewport edge */
+            --gallery-size: clamp(300px, 92vmin, 720px);
+            --ring-radius: calc(var(--gallery-size) * 0.42);
+            --item-size: clamp(64px, 14vmin, 140px);
+            --bg: #0e0f12;
+            --card: #14161b;
+            --muted: #9aa3b2;
+            --text: #e8edf6;
+            --accent: #7aa2ff;
+        }
+
+        html,
+        body {
+            height: 100%;
+            margin: 0;
+            background: #0b0d11;
+            color: var(--text);
+            font: 14px/1.4 ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial;
+        }
+
+        .wrap {
+            min-height: 100%;
+            display: grid;
+            place-items: center;
+            padding: 28px 16px 40px;
+        }
+
+        .panel {
+            width: min(96vw, 960px);
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.01));
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35), inset 0 0 0 1px rgba(255, 255, 255, 0.03);
+            border-radius: 20px;
+            padding: 22px 18px 26px;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            margin-bottom: 14px;
+        }
+
+        .title {
+            font-weight: 700;
+            letter-spacing: 0.2px;
+            font-size: clamp(16px, 2.2vw, 22px);
+        }
+
+        .hint {
+            color: var(--muted);
+            font-size: 12px;
+            opacity: 0.9;
+        }
+
+        .gallery {
+            position: relative;
+            width: var(--gallery-size);
+            height: var(--gallery-size);
+            margin-inline: auto;
+            user-select: none;
+            touch-action: none;
+        }
+
+        .ring {
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            display: grid;
+            place-items: center;
+            filter: drop-shadow(0 12px 28px rgba(0, 0, 0, 0.45));
+        }
+
+        .ring::before {
+            content: "";
+            position: absolute;
+            inset: 15%;
+            border-radius: 50%;
+            background: radial-gradient(50% 50% at 50% 50%, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.0) 60%);
+            pointer-events: none;
+        }
+
+        .item {
+            position: absolute;
+            width: var(--item-size);
+            height: var(--item-size);
+            border-radius: 16px;
+            overflow: hidden;
+            display: grid;
+            place-items: center;
+            background: #101217;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 12px 20px rgba(0, 0, 0, 0.35), inset 0 0 0 1px rgba(255, 255, 255, 0.04);
+            transform-origin: center;
+            will-change: transform, opacity, filter;
+            transition: box-shadow 160ms ease;
+            cursor: grab;
+        }
+
+        .item:active {
+            cursor: grabbing;
+        }
+
+        .item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transform: translateZ(0);
+            pointer-events: none;
+            user-select: none;
+        }
+
+        .label {
+            position: absolute;
+            bottom: 8px;
+            left: 50%;
+            translate: -50% 0;
+            padding: 6px 10px;
+            border-radius: 10px;
+            background: rgba(0, 0, 0, 0.45);
+            border: 1px solid rgba(255, 255, 255, 0.14);
+            font-size: 12px;
+            color: #fff;
+            pointer-events: none;
+            white-space: nowrap;
+            backdrop-filter: blur(6px);
+            opacity: 0;
+            transition: opacity 160ms ease;
+        }
+
+        /* Center stage shows the selected/front image */
+        .center-stage {
+            position: absolute;
+            inset: 50% auto auto 50%;
+            translate: -50% -50%;
+            width: calc(var(--gallery-size) * 0.52);
+            aspect-ratio: 1 / 1;
+            border-radius: 22px;
+            overflow: hidden;
+            display: grid;
+            place-items: center;
+            background: #0f1116;
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.04), 0 10px 28px rgba(0, 0, 0, 0.45);
+            z-index: 6;
+            cursor: pointer;
+        }
+
+        .center-stage img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .center-title {
+            position: absolute;
+            bottom: 8px;
+            left: 50%;
+            translate: -50% 0;
+            background: rgba(0, 0, 0, 0.45);
+            border: 1px solid rgba(255, 255, 255, 0.14);
+            color: #fff;
+            font-size: 12px;
+            padding: 6px 10px;
+            border-radius: 10px;
+            backdrop-filter: blur(6px);
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 18px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            appearance: none;
+            border: 1px solid rgba(255, 255, 255, 0.14);
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.02));
+            color: var(--text);
+            border-radius: 12px;
+            padding: 10px 14px;
+            font-weight: 600;
+            letter-spacing: 0.2px;
+            cursor: pointer;
+            transition: transform 120ms ease, background 120ms ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+        }
+
+        .halo {
+            position: absolute;
+            inset: 50% auto auto 50%;
+            translate: -50% -50%;
+            width: calc(var(--gallery-size) * 0.92);
+            aspect-ratio: 1/1;
+            border-radius: 50%;
+            background: radial-gradient(closest-side, rgba(122, 162, 255, 0.10), rgba(122, 162, 255, 0.03) 55%, rgba(122, 162, 255, 0) 66%);
+            filter: blur(4px);
+            pointer-events: none;
+        }
+
+        .modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.75);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 50;
+            backdrop-filter: blur(2px);
+        }
+
+        .modal.open {
+            display: flex;
+        }
+
+        .modal-card {
+            width: min(92vw, 1100px);
+            max-height: 86vh;
+            background: #0f1116;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 18px;
+            overflow: hidden;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6);
+            display: grid;
+            grid-template-rows: auto 1fr;
+        }
+
+        .modal-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 14px;
+            background: rgba(255, 255, 255, 0.04);
+        }
+
+        .modal-body {
+            display: grid;
+            place-items: center;
+            background: #0f1116;
+        }
+
+        .modal-body img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        @media (max-width: 640px) {
+            :root {
+                --ring-radius: calc(var(--gallery-size) * 0.46);
+                --item-size: clamp(56px, 18vmin, 112px);
+            }
+
+            .label {
+                display: none;
+            }
+
+            .center-stage {
+                width: calc(var(--gallery-size) * 0.60);
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+
+    <div class="wrap">
+        <div class="panel" role="region" aria-label="Circular swiper-gallery">
+            <div class="header">
+                <div class="title">Circular Swiper‑Gallery</div>
+                <div class="hint">Drag, scroll, or use ← →. Tap the center to preview.</div>
+            </div>
+
+            <div class="gallery" id="gallery">
+                <div class="halo" aria-hidden="true"></div>
+                <div class="ring" id="ring" aria-hidden="true"></div>
+
+                <!-- Center stage shows the currently-front image -->
+                <div class="center-stage" id="centerStage" aria-live="polite">
+                    <img id="centerImg" alt="Selected image" />
+                    <div class="center-title" id="centerTitle"></div>
+                </div>
+            </div>
+
+            <div class="controls">
+                <button class="btn" id="prevBtn" type="button" aria-label="Rotate left">⟵ Prev</button>
+                <button class="btn" id="nextBtn" type="button" aria-label="Rotate right">Next ⟶</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Fullscreen preview modal -->
+    <div class="modal" id="modal" aria-modal="true" role="dialog" aria-label="Image preview">
+        <div class="modal-card">
+            <div class="modal-head">
+                <div id="modalTitle">Preview</div>
+                <button class="btn" id="closeModal" type="button" aria-label="Close preview">Close ✕</button>
+            </div>
+            <div class="modal-body"><img id="modalImg" alt="Preview" /></div>
+        </div>
+    </div>
+
+    <script>
+        // ====== CONFIG ======
+        const AUTO_ROTATE = false;          // set true for gentle auto-rotation when idle
+        const INERTIA_DECAY = 0.955;        // inertia friction; 0.94..0.97 feels good
+        const WHEEL_SENSITIVITY = 0.12;     // px -> degrees scale for wheel
+
+        // REAL, RESPONSIVE IMAGES (replace these with your own)
+        // Using picsum.photos with unique seeds so they always load.
+        const images = [
+            { src: 'https://picsum.photos/seed/mountains/1200/1200', title: 'Mountains', alt: 'Mountain landscape' },
+            { src: 'https://picsum.photos/seed/beach/1200/1200', title: 'Beach', alt: 'Sunny beach' },
+            { src: 'https://picsum.photos/seed/forest/1200/1200', title: 'Forest', alt: 'Green forest' },
+            { src: 'https://picsum.photos/seed/bridge/1200/1200', title: 'Bridge', alt: 'Bridge over water' },
+            { src: 'https://picsum.photos/seed/desert/1200/1200', title: 'Desert', alt: 'Desert dunes' },
+            { src: 'https://picsum.photos/seed/city/1200/1200', title: 'City', alt: 'City skyline' },
+            { src: 'https://picsum.photos/seed/lake/1200/1200', title: 'Lake', alt: 'Lake reflections' },
+            { src: 'https://picsum.photos/seed/waves/1200/1200', title: 'Waves', alt: 'Ocean waves' },
+            { src: 'https://picsum.photos/seed/canyon/1200/1200', title: 'Canyon', alt: 'Canyon cliffs' },
+            { src: 'https://picsum.photos/seed/flowers/1200/1200', title: 'Flowers', alt: 'Colorful flowers' },
+            { src: 'https://picsum.photos/seed/nightsky/1200/1200', title: 'Night Sky', alt: 'Starry sky' },
+            { src: 'https://picsum.photos/seed/meadow/1200/1200', title: 'Meadow', alt: 'Meadow field' },
+        ];
+
+        // ====== STATE ======
+        const ring = document.getElementById('ring');
+        const gallery = document.getElementById('gallery');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const centerImg = document.getElementById('centerImg');
+        const centerTitle = document.getElementById('centerTitle');
+
+        let rotation = -90; // start with one slot at the top (top is -90deg)
+        let dragging = false;
+        let startAngle = 0;      // pointer angle at gesture start (unwrapped)
+        let startRotation = 0;   // rotation at gesture start
+        let lastPointerAngle = 0;// for unwrapping
+        let velocity = 0;        // deg / frame
+        let rafId = 0;
+        let currentFrontIndex = 0;
+
+        const history = [];
+        const MAX_HISTORY_MS = 120; // last N ms to compute velocity
+
+        // ====== BUILD RING ======
+        const N = images.length;
+        const step = 360 / N;
+
+        const items = images.map((img, idx) => {
+            const el = document.createElement('button');
+            el.className = 'item'; el.type = 'button'; el.setAttribute('aria-label', img.title); el.dataset.index = idx;
+
+            const image = document.createElement('img');
+            image.alt = img.alt || img.title || 'image';
+            image.decoding = 'async'; image.loading = 'lazy';
+            image.src = img.src;
+
+            // Lightweight responsive srcset if your URL ends with /<w>/<h>
+            const parts = img.src.split('/');
+            const w = Number(parts[parts.length - 2]); const h = Number(parts[parts.length - 1]);
+            if (!Number.isNaN(w) && !Number.isNaN(h)) {
+                const mk = (s) => img.src.replace(`/${w}/${h}`, `/${s}/${s}`);
+                image.srcset = `${mk(600)} 600w, ${mk(900)} 900w, ${mk(1200)} 1200w`;
+                image.sizes = '(max-width: 640px) 28vmin, (max-width: 1024px) 22vmin, 140px';
+            }
+
+            el.appendChild(image);
+
+            const lab = document.createElement('div');
+            lab.className = 'label'; lab.textContent = img.title; el.appendChild(lab);
+
+            el.addEventListener('click', () => openPreview(img));
+            ring.appendChild(el);
+            return el;
+        });
+
+        // ====== POSITIONING ======
+        function layout() {
+            const rect = gallery.getBoundingClientRect();
+            const cx = rect.width / 2; const cy = rect.height / 2;
+            const cssR = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--ring-radius'));
+            const R = Number.isFinite(cssR) && cssR > 0 ? cssR : Math.min(rect.width, rect.height) * 0.42;
+
+            let frontIndex = 0; let bestFrontness = -Infinity;
+
+            for (let i = 0; i < N; i++) {
+                const phi = normalizeDeg(i * step + rotation); // 0..360
+                const rad = toRad(phi);
+                const x = cx + R * Math.cos(rad);
+                const y = cy + R * Math.sin(rad);
+
+                const frontness = 1 - Math.abs(shortestAngle(phi, 270)) / 180; // 1 at top (270deg)
+                if (frontness > bestFrontness) { bestFrontness = frontness; frontIndex = i; }
+
+                const scale = 0.75 + 0.35 * (frontness ** 2);
+                const blur = 6 * (1 - frontness);
+                const opacity = 0.5 + 0.5 * frontness;
+                const z = Math.round(10 + 100 * frontness);
+
+                const el = items[i];
+                el.style.transform = `translate(${x - el.offsetWidth / 2}px, ${y - el.offsetHeight / 2}px) rotate(${-phi}deg) scale(${scale})`;
+                el.style.opacity = opacity.toFixed(3);
+                el.style.zIndex = z;
+                el.style.filter = `blur(${blur.toFixed(2)}px)`;
+                el.querySelector('.label').style.opacity = (frontness > 0.8) ? 1 : 0;
+            }
+
+            // Update center stage with the current front image
+            currentFrontIndex = frontIndex;
+            const img = images[frontIndex];
+            if (centerImg.src !== img.src) centerImg.src = img.src;
+            centerTitle.textContent = img.title;
+        }
+
+        function normalizeDeg(a) { a %= 360; return (a < 0) ? a + 360 : a; }
+        function toRad(d) { return d * Math.PI / 180; }
+        function shortestAngle(a, b) { let d = (a - b + 540) % 360 - 180; return d; }
+
+        // ====== GESTURE HANDLERS ======
+        function pointAngle(ev) {
+            const rect = gallery.getBoundingClientRect();
+            const cx = rect.left + rect.width / 2; const cy = rect.top + rect.height / 2;
+            const p = ('touches' in ev && ev.touches?.length) ? ev.touches[0] : ev;
+            const dx = p.clientX - cx; const dy = p.clientY - cy;
+            return Math.atan2(dy, dx) * 180 / Math.PI; // -180..180
+        }
+
+        function unwrap(prev, cur) { let diff = cur - prev; if (diff > 180) cur -= 360; else if (diff < -180) cur += 360; return cur; }
+
+        function onPointerDown(ev) { dragging = true; cancelAnimationFrame(rafId); velocity = 0; history.length = 0; lastPointerAngle = pointAngle(ev); startAngle = lastPointerAngle; startRotation = rotation; history.push({ t: performance.now(), a: startAngle }); window.addEventListener('pointermove', onPointerMove); window.addEventListener('pointerup', onPointerUp, { once: true }); }
+
+        function onPointerMove(ev) { if (!dragging) return; const ang = unwrap(lastPointerAngle, pointAngle(ev)); const delta = ang - startAngle; rotation = startRotation + delta; lastPointerAngle = ang; history.push({ t: performance.now(), a: ang }); pruneHistory(); layout(); }
+
+        function pruneHistory() { const now = performance.now(); while (history.length && (now - history[0].t) > MAX_HISTORY_MS) { history.shift(); } }
+
+        function onPointerUp() { dragging = false; if (history.length >= 2) { const a0 = history[0]; const a1 = history[history.length - 1]; const dt = Math.max(1, a1.t - a0.t); const da = a1.a - a0.a; const degPerMs = da / dt; velocity = degPerMs * (1000 / 60); spin(); } }
+
+        function spin() { cancelAnimationFrame(rafId); function step() { velocity *= INERTIA_DECAY; rotation += velocity; layout(); if (Math.abs(velocity) > 0.01) { rafId = requestAnimationFrame(step); } } rafId = requestAnimationFrame(step); }
+
+        // Allow drag from anywhere in the gallery (fix for center element)
+        gallery.addEventListener('pointerdown', onPointerDown);
+
+        gallery.addEventListener('wheel', (e) => { e.preventDefault(); rotation += e.deltaY * WHEEL_SENSITIVITY; layout(); }, { passive: false });
+        window.addEventListener('keydown', (e) => { if (e.key === 'ArrowLeft') { rotation -= step; layout(); } if (e.key === 'ArrowRight') { rotation += step; layout(); } });
+
+        prevBtn.addEventListener('click', () => { rotation -= step; layout(); });
+        nextBtn.addEventListener('click', () => { rotation += step; layout(); });
+
+        if (AUTO_ROTATE) { let autoId; const start = () => autoId = requestAnimationFrame(function loop() { rotation += 0.15; layout(); autoId = requestAnimationFrame(loop); }); const stop = () => cancelAnimationFrame(autoId); gallery.addEventListener('pointerenter', stop); gallery.addEventListener('pointerleave', start); start(); }
+
+        const ro = new ResizeObserver(layout); ro.observe(gallery); window.addEventListener('load', layout);
+
+        // ====== PREVIEW MODAL ======
+        const modal = document.getElementById('modal');
+        const modalImg = document.getElementById('modalImg');
+        const modalTitle = document.getElementById('modalTitle');
+        const closeModal = document.getElementById('closeModal');
+
+        function openPreview(img) { modalImg.src = img.src; modalTitle.textContent = img.title; modal.classList.add('open'); }
+        closeModal.addEventListener('click', () => modal.classList.remove('open'));
+        modal.addEventListener('click', (e) => { if (e.target === modal) modal.classList.remove('open'); });
+
+        // Clicking the center opens full preview of the current image
+        document.getElementById('centerStage').addEventListener('click', () => openPreview(images[currentFrontIndex]));
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,371 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>3D Coverflow HTML/CSS/JS</title>
+    <!-- Script Add -->
+    <script src="./main.js"></script>
+  <style>
+    /*
+      3D Coverflow — Vanilla HTML/CSS/JS
+      -------------------------------------------------
+      • Fully responsive & keyboard/touch/mouse enabled
+      • No libraries
+      • Replace <img src> URLs with your own covers
+      • Arrow keys / click / drag / scroll to navigate
+    */
+
+    :root {
+      --cardW: clamp(170px, 22vw, 260px);
+      --cardH: clamp(240px, 34vw, 360px);
+      --gap: clamp(90px, 12vw, 150px);
+      /* horizontal spacing between items */
+      --bg: #0b0f1a;
+      --text: #e8eefc;
+      --muted: #9fb0d0;
+      --accent: #7aa2ff;
+      --shadow: 0 10px 25px rgba(0, 0, 0, .35), 0 2px 10px rgba(0, 0, 0, .25);
+      --radius: 20px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      height: 100%;
+    }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(1200px 800px at 85% -20%, rgba(115, 115, 245, .15), transparent 60%),
+        radial-gradient(900px 600px at 10% -10%, rgba(127, 200, 255, .12), transparent 55%),
+        linear-gradient(180deg, #0b0f1a, #0a0c13 60%, #0b0f1a 100%);
+      display: grid;
+      place-items: center;
+      padding: min(6vh, 48px) 16px 24px;
+    }
+
+    .title {
+      text-align: center;
+      margin-bottom: 18px;
+      font-weight: 650;
+      letter-spacing: .2px;
+      color: var(--text);
+    }
+
+    .coverflow {
+      width: min(94vw, 1100px);
+      overflow: hidden;
+    }
+
+    .stage {
+      position: relative;
+      height: calc(var(--cardH) + clamp(80px, 10vh, 140px));
+      perspective: 1400px;
+      perspective-origin: 50% 40%;
+      outline: none;
+    }
+
+    .card {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: var(--cardW);
+      height: var(--cardH);
+      transform-style: preserve-3d;
+      transform: translate(-50%, -50%) translateX(calc(var(--offset) * var(--gap))) rotateY(calc(var(--offset) * -36deg)) scale(calc(1 - (var(--abs) * 0.06)));
+      transition: transform .6s cubic-bezier(.2, .7, 0, 1),
+        opacity .5s ease,
+        filter .5s ease,
+        box-shadow .6s ease;
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      opacity: var(--opacity, 1);
+      will-change: transform;
+      user-select: none;
+      cursor: pointer;
+      outline: 0;
+      background: #111;
+    }
+
+    .card img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: saturate(1.02) contrast(1.05);
+      pointer-events: none;
+      /* let pointer events hit the card */
+    }
+
+    .card::after {
+      /* subtle glass reflection */
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(75deg, rgba(255, 255, 255, .12), rgba(255, 255, 255, 0) 35%);
+      mix-blend-mode: screen;
+      pointer-events: none;
+    }
+
+    .card.is-active {
+      box-shadow: 0 18px 40px rgba(0, 0, 0, .55), 0 6px 16px rgba(0, 0, 0, .35);
+      transform: translate(-50%, -50%) translateX(calc(var(--offset) * var(--gap))) rotateY(calc(var(--offset) * -34deg)) scale(1.04);
+    }
+
+    .meta {
+      position: absolute;
+      inset-inline: 0;
+      bottom: 0;
+      padding: 14px 14px 16px;
+      background: linear-gradient(to top, rgba(0, 0, 0, .55), rgba(0, 0, 0, 0));
+      color: #fff;
+      font-size: clamp(12px, 1.6vw, 14px);
+      line-height: 1.3;
+      backdrop-filter: blur(4px);
+    }
+
+    .meta .title {
+      margin: 0;
+      font-weight: 650;
+      font-size: 1em;
+    }
+
+    .meta .subtitle {
+      margin: 2px 0 0;
+      color: #dbe6ffcc;
+      font-size: .92em;
+      font-weight: 500;
+    }
+
+    .controls {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .btn {
+      appearance: none;
+      border: 0;
+      border-radius: 999px;
+      padding: 10px 14px;
+      background: rgba(255, 255, 255, .06);
+      color: var(--text);
+      font-weight: 600;
+      box-shadow: 0 2px 12px rgba(0, 0, 0, .25) inset, 0 2px 10px rgba(0, 0, 0, .15);
+      cursor: pointer;
+      transition: transform .15s ease, background .2s ease;
+    }
+
+    .btn:hover {
+      background: rgba(255, 255, 255, .12);
+      transform: translateY(-1px);
+    }
+
+    .btn:active {
+      transform: translateY(0);
+    }
+
+    .legend {
+      text-align: center;
+      color: var(--muted);
+      font-size: .95rem;
+      margin-top: 12px;
+    }
+
+    /* Reduced motion preference */
+    @media (prefers-reduced-motion: reduce) {
+      .card {
+        transition-duration: .1s;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="coverflow" aria-label="3D Coverflow">
+    <h1 class="title">3D Coverflow</h1>
+
+    <div class="controls" role="toolbar" aria-label="Coverflow controls">
+      <button class="btn" id="prevBtn" aria-label="Previous (←)">◀</button>
+      <button class="btn" id="nextBtn" aria-label="Next (→)">▶</button>
+    </div>
+
+    <div class="stage" id="stage" tabindex="0" role="listbox" aria-live="polite">
+      <!-- Replace these image URLs with your own assets -->
+      <figure class="card" id="item-0" role="option" aria-label="Aurora Nights">
+        <img src="https://images.unsplash.com/photo-1519681393784-d120267933ba?q=80&w=1200&auto=format&fit=crop"
+          alt="Aurora Nights" draggable="false" />
+        <figcaption class="meta">
+          <p class="title">Aurora Nights</p>
+          <p class="subtitle">Cosmic chill</p>
+        </figcaption>
+      </figure>
+
+      <figure class="card" id="item-1" role="option" aria-label="Golden Desert">
+        <img src="https://images.unsplash.com/photo-1501785888041-af3ef285b470?q=80&w=1200&auto=format&fit=crop"
+          alt="Golden Desert" draggable="false" />
+        <figcaption class="meta">
+          <p class="title">Golden Desert</p>
+          <p class="subtitle">Warm horizons</p>
+        </figcaption>
+      </figure>
+
+      <figure class="card" id="item-2" role="option" aria-label="City Neon">
+        <img src="https://images.unsplash.com/photo-1508057198894-247b23fe5ade?q=80&w=1200&auto=format&fit=crop"
+          alt="City Neon" draggable="false" />
+        <figcaption class="meta">
+          <p class="title">City Neon</p>
+          <p class="subtitle">Late night run</p>
+        </figcaption>
+      </figure>
+
+      <figure class="card" id="item-3" role="option" aria-label="Ocean Mist">
+        <img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=1200&auto=format&fit=crop"
+          alt="Ocean Mist" draggable="false" />
+        <figcaption class="meta">
+          <p class="title">Ocean Mist</p>
+          <p class="subtitle">Blue hour</p>
+        </figcaption>
+      </figure>
+
+      <figure class="card" id="item-4" role="option" aria-label="Crimson Peaks">
+        <img src="https://images.unsplash.com/photo-1519682337058-a94d519337bc?q=80&w=1200&auto=format&fit=crop"
+          alt="Crimson Peaks" draggable="false" />
+        <figcaption class="meta">
+          <p class="title">Crimson Peaks</p>
+          <p class="subtitle">Dusk shines</p>
+        </figcaption>
+      </figure>
+
+      <figure class="card" id="item-5" role="option" aria-label="Forest Light">
+        <img src="https://images.unsplash.com/photo-1441974231531-c6227db76b6e?q=80&w=1200&auto=format&fit=crop"
+          alt="Forest Light" draggable="false" />
+        <figcaption class="meta">
+          <p class="title">Forest Light</p>
+          <p class="subtitle">Green calm</p>
+        </figcaption>
+      </figure>
+
+      <figure class="card" id="item-6" role="option" aria-label="Retro Waves">
+        <img src="https://images.unsplash.com/photo-1518779578993-ec3579fee39f?q=80&w=1200&auto=format&fit=crop"
+          alt="Retro Waves" draggable="false" />
+        <figcaption class="meta">
+          <p class="title">Retro Waves</p>
+          <p class="subtitle">Analog love</p>
+        </figcaption>
+      </figure>
+
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      const stage = document.getElementById('stage');
+      const cards = Array.from(stage.querySelectorAll('.card'));
+      const prevBtn = document.getElementById('prevBtn');
+      const nextBtn = document.getElementById('nextBtn');
+
+      let active = Math.floor(cards.length / 2);
+
+      function clamp(n, min, max) { return Math.max(min, Math.min(max, n)); }
+
+      function setActive(index) {
+        active = clamp(index, 0, cards.length - 1);
+        update();
+      }
+
+      function update() {
+        cards.forEach((card, i) => {
+          const offset = i - active; // negative = left, positive = right
+          const abs = Math.abs(offset);
+          card.style.setProperty('--offset', offset);
+          card.style.setProperty('--abs', abs);
+          card.style.setProperty('--opacity', (1 - Math.min(abs * 0.12, 0.72)).toFixed(2));
+          card.classList.toggle('is-active', i === active);
+          card.style.zIndex = String(cards.length - abs); // ensure active sits on top
+          card.setAttribute('aria-selected', i === active ? 'true' : 'false');
+          card.setAttribute('aria-hidden', abs > 5 ? 'true' : 'false');
+        });
+        stage.setAttribute('aria-activedescendant', `item-${active}`);
+      }
+
+      // Click to center
+      cards.forEach((card, i) => {
+        card.addEventListener('click', () => setActive(i));
+      });
+
+      // Prev/Next buttons
+      prevBtn.addEventListener('click', () => setActive(active - 1));
+      nextBtn.addEventListener('click', () => setActive(active + 1));
+
+      // Keyboard navigation when stage is focused
+      stage.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowLeft') { e.preventDefault(); setActive(active - 1); }
+        else if (e.key === 'ArrowRight') { e.preventDefault(); setActive(active + 1); }
+        else if (e.key === 'Home') { setActive(0); }
+        else if (e.key === 'End') { setActive(cards.length - 1); }
+      });
+
+      // Wheel navigation (horizontal or vertical)
+      let wheelLock = false;
+      stage.addEventListener('wheel', (e) => {
+        if (wheelLock) return; // rate limit for better control
+        const delta = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
+        if (Math.abs(delta) > 10) {
+          setActive(active + (delta > 0 ? 1 : -1));
+          wheelLock = true;
+          setTimeout(() => wheelLock = false, 220);
+          e.preventDefault();
+        }
+      }, { passive: false });
+
+      // Drag / swipe with Pointer Events
+      let startX = null;
+      let dragging = false;
+
+      stage.addEventListener('pointerdown', (e) => {
+        dragging = true;
+        startX = e.clientX;
+        stage.setPointerCapture(e.pointerId);
+      });
+
+      stage.addEventListener('pointermove', (e) => {
+        if (!dragging || startX == null) return;
+        const dx = e.clientX - startX;
+        const threshold = Math.max(30, window.innerWidth * 0.03);
+        if (Math.abs(dx) > threshold) {
+          setActive(active + (dx < 0 ? 1 : -1));
+          startX = e.clientX; // allow continued swiping
+        }
+      });
+
+      stage.addEventListener('pointerup', () => { dragging = false; startX = null; });
+      stage.addEventListener('pointercancel', () => { dragging = false; startX = null; });
+
+      // Initialize
+      update();
+      // Improve initial focus on load for keyboard users
+      setTimeout(() => stage.focus({ preventScroll: true }), 0);
+
+      // Expose a tiny API for convenience (optional)
+      window.coverflow = {
+        next: () => setActive(active + 1),
+        prev: () => setActive(active - 1),
+        goTo: (i) => setActive(i)
+      };
+    })();
+  </script>
+</body>
+
+</html>

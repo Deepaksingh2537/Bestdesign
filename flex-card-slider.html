@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Flex Card Hover Slider – HTML/CSS/JS</title>
+
+  <!-- Script Add -->
+  <script src="./main.js"></script>
+
+  <style>
+    /* -----------------------
+       Base & Theme
+    ----------------------- */
+    :root {
+      --bg: #0b0f1a;
+      --card-radius: 20px;
+      --pad: 18px;
+      --gap: 18px;
+      --ring: 2px;
+      --shadow: 0 20px 40px rgba(0, 0, 0, .35);
+      --speed: .35s;
+      --easing: cubic-bezier(.2, .8, .2, 1);
+      --text: #e9eef6;
+      --muted: #b8c2d1;
+      --accent: #7dd3fc;
+      /* sky-300 */
+    }
+
+    * {
+      box-sizing: border-box
+    }
+
+    html,
+    body {
+      height: 100%
+    }
+
+    body {
+      margin: 0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      background:
+        radial-gradient(1200px 500px at 10% -10%, rgba(125, 211, 252, .15), transparent 60%),
+        radial-gradient(1400px 600px at 90% 110%, rgba(96, 165, 250, .12), transparent 60%),
+        var(--bg);
+      color: var(--text);
+    }
+
+    .wrap {
+      max-width: 1200px;
+      margin: 40px auto;
+      padding: 0 16px;
+    }
+
+    h1 {
+      font-size: clamp(24px, 4vw, 40px);
+      margin: 0 0 12px
+    }
+
+    p.lead {
+      color: var(--muted);
+      margin: 0 0 24px
+    }
+
+    /* -----------------------
+       Slider Shell
+    ----------------------- */
+    .slider {
+      position: relative;
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      align-items: center;
+      gap: 8px;
+      isolation: isolate;
+    }
+
+    /* Nav buttons */
+    .nav {
+      appearance: none;
+      -webkit-appearance: none;
+      border: 0;
+      cursor: pointer;
+      width: 44px;
+      height: 44px;
+      border-radius: 999px;
+      display: grid;
+      place-items: center;
+      background: rgba(255, 255, 255, .06);
+      backdrop-filter: blur(8px);
+      box-shadow: var(--shadow);
+      transition: transform var(--speed) var(--easing), background var(--speed) var(--easing), opacity .2s;
+      color: var(--text);
+    }
+
+    .nav:hover {
+      transform: translateY(-1px)
+    }
+
+    .nav:active {
+      transform: translateY(0) scale(.98)
+    }
+
+    .nav[disabled] {
+      opacity: .35;
+      pointer-events: none
+    }
+
+    .nav svg {
+      width: 22px;
+      height: 22px
+    }
+
+    /* Cards rail */
+    .cards {
+      list-style: none;
+      margin: 0;
+      padding: 10px;
+      display: flex;
+      gap: var(--gap);
+      overflow-x: auto;
+      overflow-y: hidden;
+      -webkit-overflow-scrolling: touch;
+      scroll-snap-type: x mandatory;
+      scroll-padding-inline: 10px;
+      border-radius: 24px;
+      background: rgba(255, 255, 255, .03);
+      backdrop-filter: blur(6px);
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .04);
+    }
+
+    .cards::-webkit-scrollbar {
+      height: 10px
+    }
+
+    .cards::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, .15);
+      border-radius: 999px
+    }
+
+    .card {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      min-width: clamp(220px, 28vw, 360px);
+      height: clamp(180px, 45vh, 360px);
+      border-radius: var(--card-radius);
+      padding: var(--pad);
+      background:
+        linear-gradient(to top, rgba(3, 7, 18, .75), rgba(3, 7, 18, .15)),
+        var(--image, radial-gradient(circle at 30% 30%, #1f2937, #0f172a));
+      background-size: cover;
+      background-position: center;
+      color: var(--text);
+      text-decoration: none;
+      scroll-snap-align: center;
+      box-shadow: var(--shadow), inset 0 0 0 1px rgba(255, 255, 255, .06);
+      transition: flex var(--speed) var(--easing), transform var(--speed) var(--easing), box-shadow var(--speed) var(--easing);
+      flex: 1 0 auto;
+      will-change: flex, transform;
+    }
+
+    /* Fancy shine */
+    .card::after {
+      content: "";
+      position: absolute;
+      inset: -2px;
+      border-radius: inherit;
+      pointer-events: none;
+      background: conic-gradient(from 180deg at 50% 50%, transparent 0 25%, rgba(125, 211, 252, .25) 30%, transparent 45% 100%);
+      transform: rotate(0deg);
+      opacity: .0;
+      transition: opacity var(--speed) var(--easing), transform 1.2s linear;
+      filter: blur(12px);
+    }
+
+    .card:hover {
+      transform: translateY(-4px)
+    }
+
+    .card:hover::after {
+      opacity: .75;
+      transform: rotate(180deg)
+    }
+
+    /* Hover-to-expand behavior on pointer devices that support hover */
+    @media (hover:hover) and (pointer:fine) {
+      .cards:hover .card {
+        flex-basis: clamp(200px, 18vw, 260px);
+        flex-grow: 1
+      }
+
+      .cards:hover .card:hover {
+        flex-basis: clamp(360px, 46vw, 640px);
+        flex-grow: 10
+      }
+    }
+
+    /* Tap-to-expand (class driven) for touch devices */
+    .card.is-active {
+      flex-basis: clamp(360px, 70vw, 680px);
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, .08);
+      color: var(--accent);
+      font-weight: 600;
+      font-size: 12px;
+      letter-spacing: .3px;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+
+    .title {
+      font-size: clamp(18px, 2.4vw, 28px);
+      margin: 0 0 6px;
+    }
+
+    .desc {
+      color: var(--muted);
+      margin: 0 0 14px;
+      line-height: 1.35
+    }
+
+    .cta {
+      display: inline-flex;
+      align-items: center;
+      width: fit-content;
+      gap: 8px;
+      padding: 10px 12px;
+      border-radius: 12px;
+      text-decoration: none;
+      cursor: pointer;
+      background: rgba(125, 211, 252, .18);
+      color: var(--text);
+      border: 1px solid rgba(125, 211, 252, .35);
+      transition: transform var(--speed) var(--easing), background var(--speed) var(--easing);
+    }
+
+    .cta:hover {
+      transform: translateY(-1px)
+    }
+
+    .cta svg {
+      width: 18px;
+      height: 18px
+    }
+
+    /* Focus styles for accessibility */
+    .card:focus-visible,
+    .cta:focus-visible,
+    .nav:focus-visible {
+      outline: none;
+      box-shadow: 0 0 0 var(--ring) rgba(125, 211, 252, .9), var(--shadow);
+    }
+
+    /* Reduced motion */
+    @media (prefers-reduced-motion: reduce) {
+
+      .card,
+      .cta,
+      .nav {
+        transition: none
+      }
+
+      .card:hover {
+        transform: none
+      }
+
+      .card::after {
+        display: none
+      }
+    }
+
+    /* Small screens: stack header/nav */
+    @media (max-width: 640px) {
+      .slider {
+        grid-template-columns: 1fr;
+        gap: 12px
+      }
+
+      .nav {
+        position: sticky;
+        bottom: 12px;
+        justify-self: end;
+        z-index: 2
+      }
+
+      .nav.prev {
+        justify-self: start
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <h1>Flex Card Hover Slider</h1>
+    <p class="lead">Hover (desktop) or tap (mobile) a card to expand it. Drag to scroll, use the arrows, or press ←/→
+      when the rail is focused.</p>
+
+    <div class="slider" aria-label="Flex Card Hover Slider">
+      <button class="nav prev" aria-label="Scroll left" title="Scroll left">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+          stroke-linejoin="round" aria-hidden="true">
+          <polyline points="15 18 9 12 15 6" />
+        </svg>
+      </button>
+
+      <ul class="cards" id="cards" role="list" tabindex="0" aria-roledescription="carousel" aria-label="Destinations">
+        <!-- Each card uses a CSS custom property to set its background image -->
+        <li class="card" role="listitem" style="--image: url('assets/3d-businessman.jpg');">
+
+          <h3 class="title">Aurora Peaks</h3>
+          <p class="desc">Glass-like lakes beneath neon skies. Perfect for night photography and star-gazing hikes.</p>
+          <a class="cta" href="#" aria-label="Learn more about Aurora Peaks">Learn more
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round" aria-hidden="true">
+              <line x1="5" y1="12" x2="19" y2="12" />
+              <polyline points="12 5 19 12 12 19" />
+            </svg>
+          </a>
+        </li>
+
+        <li class="card" role="listitem"
+          style="--image: url('https://images.unsplash.com/photo-1491553895911-0055eca6402d?q=80&w=1600&auto=format&fit=crop');">
+
+          <h3 class="title">Neon District</h3>
+          <p class="desc">Futuristic alleys, street food, and cyberpunk vibes with reflective rain-slicked streets.</p>
+          <a class="cta" href="#">Take a tour
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round">
+              <line x1="5" y1="12" x2="19" y2="12" />
+              <polyline points="12 5 19 12 12 19" />
+            </svg>
+          </a>
+        </li>
+
+        <li class="card" role="listitem"
+          style="--image: url('https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?q=80&w=1600&auto=format&fit=crop');">
+
+          <h3 class="title">Emerald Canyon</h3>
+          <p class="desc">Warm light pours into mossy chasms. A dream for hikers, climbers, and drone pilots.</p>
+          <a class="cta" href="#">Plan trip
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round">
+              <line x1="5" y1="12" x2="19" y2="12" />
+              <polyline points="12 5 19 12 12 19" />
+            </svg>
+          </a>
+        </li>
+
+        <li class="card" role="listitem"
+          style="--image: url('https://images.unsplash.com/photo-1477096104373-e7f6d7c82a9b?q=80&w=1600&auto=format&fit=crop');">
+
+          <h3 class="title">Old Bazaar</h3>
+          <p class="desc">Labyrinthine markets, handwoven textiles, and rich spices wafting through arched halls.</p>
+          <a class="cta" href="#">See details
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round">
+              <line x1="5" y1="12" x2="19" y2="12" />
+              <polyline points="12 5 19 12 12 19" />
+            </svg>
+          </a>
+        </li>
+
+        <li class="card" role="listitem"
+          style="--image: url('https://images.unsplash.com/photo-1549880338-65ddcdfd017b?q=80&w=1600&auto=format&fit=crop');">
+
+          <h3 class="title">Cerulean Coast</h3>
+          <p class="desc">Clifftop cafes and tidal pools. Catch golden hour where waves paint the rocks.</p>
+          <a class="cta" href="#">Book stay
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round">
+              <line x1="5" y1="12" x2="19" y2="12" />
+              <polyline points="12 5 19 12 12 19" />
+            </svg>
+          </a>
+        </li>
+
+        <li class="card" role="listitem"
+          style="--image: url('https://images.unsplash.com/photo-1519681393784-d120267933ba?q=80&w=1600&auto=format&fit=crop');">
+
+          <h3 class="title">Alpine Cabin</h3>
+          <p class="desc">Snow-dusted pines and fireside cocoa. Stargaze on crisp winter nights.</p>
+          <a class="cta" href="#">Check dates
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round">
+              <line x1="5" y1="12" x2="19" y2="12" />
+              <polyline points="12 5 19 12 12 19" />
+            </svg>
+          </a>
+        </li>
+      </ul>
+
+      <button class="nav next" aria-label="Scroll right" title="Scroll right">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+          stroke-linejoin="round">
+          <polyline points="9 18 15 12 9 6" />
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      const rail = document.getElementById('cards');
+      const prev = document.querySelector('.nav.prev');
+      const next = document.querySelector('.nav.next');
+      const cards = Array.from(rail.querySelectorAll('.card'));
+
+      // Scroll helpers
+      const scrollByAmount = () => Math.max(rail.clientWidth * 0.9, 280);
+      const smooth = { behavior: 'smooth' };
+
+      const updateButtons = () => {
+        const atStart = rail.scrollLeft <= 4;
+        const atEnd = rail.scrollLeft + rail.clientWidth >= rail.scrollWidth - 4;
+        prev.disabled = atStart; next.disabled = atEnd;
+      };
+
+      prev.addEventListener('click', () => { rail.scrollBy({ left: -scrollByAmount(), ...smooth }); });
+      next.addEventListener('click', () => { rail.scrollBy({ left: scrollByAmount(), ...smooth }); });
+      rail.addEventListener('scroll', updateButtons, { passive: true });
+      window.addEventListener('resize', updateButtons);
+      updateButtons();
+
+      // Drag to scroll (desktop)
+      let isDown = false, startX = 0, startLeft = 0;
+      rail.addEventListener('pointerdown', (e) => {
+        if (e.pointerType === 'mouse' || e.pointerType === 'pen') {
+          isDown = true; startX = e.clientX; startLeft = rail.scrollLeft; rail.setPointerCapture(e.pointerId);
+          rail.style.cursor = 'grabbing';
+        }
+      });
+      rail.addEventListener('pointermove', (e) => {
+        if (!isDown) return; const dx = e.clientX - startX; rail.scrollLeft = startLeft - dx;
+      });
+      rail.addEventListener('pointerup', (e) => { isDown = false; rail.releasePointerCapture?.(e.pointerId); rail.style.cursor = ''; });
+      rail.addEventListener('pointercancel', () => { isDown = false; rail.style.cursor = ''; });
+
+      // Keyboard navigation on the rail
+      rail.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowRight') { e.preventDefault(); rail.scrollBy({ left: scrollByAmount(), ...smooth }); }
+        if (e.key === 'ArrowLeft') { e.preventDefault(); rail.scrollBy({ left: -scrollByAmount(), ...smooth }); }
+      });
+
+      // Touch: tap to expand; ensure only one active at a time
+      const isTouch = matchMedia('(pointer:coarse)').matches;
+      if (isTouch) {
+        let active = null;
+        const activate = (el) => {
+          if (active && active !== el) active.classList.remove('is-active');
+          el.classList.toggle('is-active'); active = el.classList.contains('is-active') ? el : null;
+          // Center active card
+          const rect = el.getBoundingClientRect();
+          const railRect = rail.getBoundingClientRect();
+          const offset = (rect.left + rect.width / 2) - (railRect.left + railRect.width / 2);
+          rail.scrollBy({ left: offset, behavior: 'smooth' });
+        };
+        cards.forEach(c => c.addEventListener('click', (e) => {
+          // avoid immediate navigation on CTA clicks
+          if (e.target.closest('.cta')) return;
+          e.preventDefault(); activate(c);
+        }));
+      }
+
+      // Optional: auto-center hovered card on desktop for nice effect
+      if (matchMedia('(hover:hover) and (pointer:fine)').matches) {
+        let hoverTimeout;
+        cards.forEach(c => c.addEventListener('mouseenter', () => {
+          clearTimeout(hoverTimeout);
+          hoverTimeout = setTimeout(() => {
+            const rect = c.getBoundingClientRect();
+            const railRect = rail.getBoundingClientRect();
+            const offset = (rect.left + rect.width / 2) - (railRect.left + railRect.width / 2);
+            rail.scrollBy({ left: offset, behavior: 'smooth' });
+          }, 120);
+        }));
+        rail.addEventListener('mouseleave', () => clearTimeout(hoverTimeout));
+      }
+    })();
+  </script>
+</body>
+
+</html>
